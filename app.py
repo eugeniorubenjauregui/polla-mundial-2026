@@ -17,7 +17,7 @@ import plotly.graph_objects as go
 import requests
 import numpy as np
 from io import BytesIO
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # ══════════════════════════════════════════════════════════
 # CONFIG
@@ -34,7 +34,7 @@ GOOGLE_SHEETS_URL    = f"https://docs.google.com/spreadsheets/d/{GOOGLE_SHEETS_I
 POLL_SHEET_NAME      = "Respuestas de formulario 1"
 LOCAL_FILE           = "Gran Polla Familiar y Amigoss - Mundial 2026 🏆 (respuestas).xlsx"
 PRECIO_PP            = 20_000
-REFRESH_SECONDS      = 300
+REFRESH_SECONDS      = 600
 
 # ── Banderas ──────────────────────────────────────────────
 FLAGS = {
@@ -436,14 +436,6 @@ def load_data(use_gsheets=True):
     except FileNotFoundError:
         return None, None, None
 
-
-@st.fragment(run_every=timedelta(seconds=REFRESH_SECONDS))
-def auto_refresh_from_gsheets():
-    if not st.session_state.get("use_gsheets"):
-        return
-    load_data.clear()
-    parse_data.clear()
-    st.rerun()
 
 @st.cache_data
 def parse_data(df_raw):
@@ -942,8 +934,6 @@ def main():
     with tab1: tab_leaderboard(df_p, matches)
     with tab2: tab_match_analysis(df_p, matches)
     with tab3: tab_individual(df_p, matches)
-
-    auto_refresh_from_gsheets()
 
     st.markdown("""
     <div style="text-align:center;padding:28px 0 12px;color:rgba(255,255,255,.15);font-size:.7rem;letter-spacing:1.5px">
