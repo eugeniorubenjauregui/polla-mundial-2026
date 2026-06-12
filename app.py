@@ -813,39 +813,49 @@ def tab_individual(df, matches):
         official_score = f"{m['goals_a']} – {m['goals_b']}"
         winner_off = (f"Ganó {fa2} {m['team_a']}" if m['goals_a'] > m['goals_b'] else
                       (f"Ganó {fb2} {m['team_b']}" if m['goals_b'] > m['goals_a'] else "🤝 Empate"))
-        result_section = f"""
-        <div style="margin-top:14px;padding-top:14px;border-top:.5px solid rgba(255,255,255,.1)">
-            <div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap">
-                <div style="font-size:.8rem;color:rgba(255,255,255,.5)">Resultado real:</div>
-                <div style="font-size:1.5rem;font-weight:700;color:white">{official_score}</div>
-                <div style="font-size:.85rem;color:rgba(255,255,255,.6)">{winner_off}</div>
-                <div>{pts_badge}</div>
-            </div>
-        </div>"""
+        result_html = (
+            '<div style="margin-top:14px;padding-top:14px;border-top:.5px solid rgba(255,255,255,.1)">'
+            '<div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap">'
+            f'<div style="font-size:.8rem;color:rgba(255,255,255,.5)">Resultado real:</div>'
+            f'<div style="font-size:1.5rem;font-weight:700;color:white">{official_score}</div>'
+            f'<div style="font-size:.85rem;color:rgba(255,255,255,.6)">{winner_off}</div>'
+            f'<div>{pts_badge}</div>'
+            '</div></div>'
+        )
     else:
-        result_section = '<div style="margin-top:12px;font-size:.8rem;color:rgba(255,255,255,.4)"><span class="badge-p">Partido aún no disputado</span></div>'
+        result_html = (
+            '<div style="margin-top:12px;font-size:.8rem;color:rgba(255,255,255,.4)">'
+            '<span class="badge-p">Partido aún no disputado</span></div>'
+        )
 
-    st.markdown(f"""
-    <div class="match-board">
-        <div style="margin-bottom:12px">{'<span class="badge-j">✅ Jugado</span>' if m["status"]=="Jugado" else '<span class="badge-p">⏳ Pendiente</span>'}</div>
-        <div style="font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:8px">{m['team_a']} vs {m['team_b']}</div>
-        <div style="display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap">
-            <div style="text-align:center">
-                <div style="font-size:2.2rem">{fa2}</div>
-                <div style="font-size:.9rem;font-weight:600;color:white;margin-top:4px">{m['team_a']}</div>
-            </div>
-            <div style="text-align:center">
-                <div style="font-size:.7rem;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase">Mi pronóstico</div>
-                <div style="font-size:2.8rem;font-weight:900;color:white;letter-spacing:8px;line-height:1.1">{pred_score}</div>
-                <div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-top:4px">Aposté: <b style="color:white">{pw or '—'}</b></div>
-            </div>
-            <div style="text-align:center">
-                <div style="font-size:2.2rem">{fb2}</div>
-                <div style="font-size:.9rem;font-weight:600;color:white;margin-top:4px">{m['team_b']}</div>
-            </div>
-        </div>
-        {result_section}
-    </div>""", unsafe_allow_html=True)
+    status_badge = (
+        '<span class="badge-j">✅ Jugado</span>'
+        if m["status"] == "Jugado"
+        else '<span class="badge-p">⏳ Pendiente</span>'
+    )
+    st.markdown(
+        f'<div class="match-board">'
+        f'<div style="margin-bottom:12px">{status_badge}</div>'
+        f'<div style="font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:8px">{m["team_a"]} vs {m["team_b"]}</div>'
+        f'<div style="display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap">'
+        f'<div style="text-align:center">'
+        f'<div style="font-size:2.2rem">{fa2}</div>'
+        f'<div style="font-size:.9rem;font-weight:600;color:white;margin-top:4px">{m["team_a"]}</div>'
+        f'</div>'
+        f'<div style="text-align:center">'
+        f'<div style="font-size:.7rem;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase">Mi pronóstico</div>'
+        f'<div style="font-size:2.8rem;font-weight:900;color:white;letter-spacing:8px;line-height:1.1">{pred_score}</div>'
+        f'<div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-top:4px">Aposté: '
+        f'<b style="color:white">{pw or "—"}</b></div>'
+        f'</div>'
+        f'<div style="text-align:center">'
+        f'<div style="font-size:2.2rem">{fb2}</div>'
+        f'<div style="font-size:.9rem;font-weight:600;color:white;margin-top:4px">{m["team_b"]}</div>'
+        f'</div></div>'
+        f'{result_html}'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
     # ── Partidos jugados ──────────────────────────────────────
     if played:
