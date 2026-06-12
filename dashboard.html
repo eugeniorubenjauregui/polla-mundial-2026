@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gran Polla Familiar & Amigos — Mundial 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f2f5fb;
+    --surface: #ffffff;
+    --surface2: #f8faff;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.05);
+    --text: #0f172a;
+    --muted: #64748b;
+    --muted2: #94a3b8;
+    --gold: #d4a000;
+    --gold-bg: #fffbeb;
+    --silver: #6b7280;
+    --bronze: #92400e;
+    --green: #059669;
+    --green-bg: #ecfdf5;
+    --accent: #0284c7;
+    --fifa-red: #C1121F;
+    --fifa-blue: #1D3557;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,0.1),0 4px 12px rgba(0,0,0,0.06);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--bg); color:var(--text);
+    font-family:'Be Vietnam Pro','Segoe UI',system-ui,sans-serif;
+    min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── FLAG IMAGE HELPERS (embedded, no CDN) ─ */
+  .flag-img { border-radius:3px; box-shadow:0 1px 4px rgba(0,0,0,.2); object-fit:cover; vertical-align:middle; display:inline-block; flex-shrink:0; }
+  .fi-lg  { width:40px; height:30px; }
+  .fi-xl  { width:52px; height:39px; }
+  .fi-xxl { width:64px; height:48px; }
+  .fi-sm  { width:20px; height:15px; }
+  .fi-xs  { width:16px; height:12px; }
+
+  /* ── HERO ─────────────────────────────────── */
+  .hero {
+    position:relative; overflow:hidden;
+    background:#ffffff; padding:40px 20px 34px;
+    text-align:center; border-bottom:1px solid rgba(0,0,0,.06);
+  }
+  .hero-top-bar {
+    position:absolute; top:0; left:0; right:0; height:5px;
+    background:linear-gradient(90deg,
+      #C1121F 0%,#e63946 9%,#f4a261 18%,#e9c46a 27%,
+      #2a9d8f 36%,#264653 45%,#023e8a 54%,#0077b6 63%,
+      #7b2fbe 72%,#c77dff 81%,#C1121F 90%,#e63946 100%);
+  }
+  .hero-deco {
+    position:absolute; inset:0; pointer-events:none; overflow:hidden;
+  }
+  .hero-deco::before {
+    content:''; position:absolute; width:600px; height:600px; border-radius:50%;
+    top:-350px; right:-200px;
+    background:radial-gradient(circle,rgba(193,18,31,.04) 0%,transparent 70%);
+  }
+  .hero-deco::after {
+    content:''; position:absolute; width:500px; height:500px; border-radius:50%;
+    bottom:-280px; left:-150px;
+    background:radial-gradient(circle,rgba(0,119,182,.05) 0%,transparent 70%);
+  }
+  .fifa-badge {
+    display:inline-flex; align-items:center; gap:7px;
+    background:#f1f5f9; border:1px solid #e2e8f0;
+    border-radius:24px; padding:5px 18px; font-size:11px; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase; color:#64748b;
+    margin-bottom:16px; position:relative;
+  }
+  .hero-title {
+    font-size:clamp(1.8rem,5vw,3.2rem); font-weight:900; line-height:1.05;
+    background:linear-gradient(135deg,#C1121F 0%,#e63946 28%,#1D3557 60%,#023e8a 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; letter-spacing:-1.5px; margin-bottom:8px; position:relative;
+  }
+  .hero-sub {
+    font-size:clamp(.9rem,2.5vw,1.1rem); color:#64748b;
+    margin-bottom:18px; font-weight:500; position:relative;
+  }
+  .prize-badge {
+    display:inline-flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg,#fffbeb,#fef3c7);
+    border:1.5px solid rgba(212,160,0,.45); border-radius:30px;
+    padding:9px 22px; font-size:1rem; font-weight:800;
+    color:#92400e; margin-bottom:18px;
+    box-shadow:0 2px 8px rgba(212,160,0,.15); position:relative;
+  }
+  .created-by {
+    font-size:.72rem; letter-spacing:2.5px; text-transform:uppercase;
+    color:#94a3b8; margin-bottom:26px; font-weight:600; position:relative;
+  }
+  .created-by strong { color:#0284c7; font-weight:800; letter-spacing:3px; }
+
+  /* ── FLAGS STRIP ─────────────────────────── */
+  .flags-strip {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+    max-width:760px; margin:0 auto; position:relative;
+  }
+  .flag-chip {
+    display:inline-block; cursor:default; position:relative;
+    transition:transform .2s ease,box-shadow .2s ease;
+    border-radius:5px; overflow:hidden;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);
+  }
+  .flag-chip:hover {
+    transform:scale(1.3) translateY(-4px);
+    box-shadow:0 8px 20px rgba(0,0,0,.2);
+    z-index:10;
+  }
+  .flag-chip .fi { border-radius:5px; box-shadow:none; }
+
+  /* ── TABS ─────────────────────────────────── */
+  .tabs-wrap {
+    position:sticky; top:0; z-index:100;
+    background:rgba(255,255,255,.97); backdrop-filter:blur(12px);
+    border-bottom:2px solid var(--border); box-shadow:var(--shadow-sm);
+  }
+  .tabs { display:flex; justify-content:center; max-width:800px; margin:0 auto; }
+  .tab-btn {
+    flex:1; padding:15px 8px; background:none; border:none; color:var(--muted);
+    font-family:'Be Vietnam Pro',system-ui,sans-serif;
+    font-size:clamp(.75rem,2.2vw,.92rem); font-weight:700; cursor:pointer;
+    border-bottom:3px solid transparent; transition:all .25s;
+    white-space:nowrap; margin-bottom:-2px;
+  }
+  .tab-btn .tab-icon { font-size:1.1rem; margin-right:5px; }
+  .tab-btn.active { color:var(--fifa-red); border-bottom-color:var(--fifa-red); }
+  .tab-btn:hover:not(.active) { color:var(--text); background:#f8faff; }
+
+  /* ── CONTENT ─────────────────────────────── */
+  .tab-panel { display:none; max-width:900px; margin:0 auto; padding:28px 16px 70px; }
+  .tab-panel.active { display:block; }
+  .card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; padding:22px; margin-bottom:18px;
+    box-shadow:var(--shadow-md);
+  }
+  .card-title {
+    font-size:.72rem; text-transform:uppercase; letter-spacing:2px;
+    color:var(--muted); margin-bottom:18px; font-weight:700;
+    display:flex; align-items:center; gap:8px;
+  }
+  .card-title .cicon { font-size:1.1rem; }
+  .section-title {
+    font-size:1rem; font-weight:800; margin-bottom:16px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .section-title .sicon { font-size:1.3rem; }
+
+  /* ── PODIUM ───────────────────────────────── */
+  .podium { display:flex; align-items:flex-end; justify-content:center; gap:10px; margin:20px 0 28px; }
+  .podium-item { text-align:center; flex:1; max-width:170px; }
+  .podium-block {
+    border-radius:14px 14px 0 0; display:flex; flex-direction:column;
+    align-items:center; justify-content:flex-end; padding:18px 10px 16px;
+  }
+  .podium-1 { background:linear-gradient(180deg,#fffbeb,#fef3c7); border:2px solid rgba(212,160,0,.4); min-height:140px; box-shadow:0 4px 20px rgba(212,160,0,.15); }
+  .podium-2 { background:linear-gradient(180deg,#f8fafc,#f1f5f9); border:2px solid rgba(148,163,184,.4); min-height:108px; }
+  .podium-3 { background:linear-gradient(180deg,#fff7ed,#ffedd5); border:2px solid rgba(146,64,14,.25); min-height:88px; }
+  .podium-medal { font-size:2.2rem; margin-bottom:6px; }
+  .podium-name { font-size:.8rem; font-weight:800; color:var(--text); line-height:1.3; }
+  .podium-pts { font-size:1.6rem; font-weight:900; margin-top:6px; }
+  .podium-1 .podium-pts { color:var(--gold); }
+  .podium-2 .podium-pts { color:var(--silver); }
+  .podium-3 .podium-pts { color:var(--bronze); }
+  .podium-pos { font-size:.72rem; color:var(--muted); margin-top:4px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:5px; }
+
+  /* ── TABLE ───────────────────────────────── */
+  .lb-table { width:100%; border-collapse:collapse; }
+  .lb-table th { font-size:.68rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted2); padding:8px 12px; text-align:left; border-bottom:2px solid var(--border); font-weight:700; }
+  .lb-table td { padding:11px 12px; border-bottom:1px solid var(--border2); font-size:.9rem; }
+  .lb-table tr:last-child td { border-bottom:none; }
+  .lb-table tr:hover td { background:var(--surface2); }
+  .rank-badge { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; font-weight:800; font-size:.8rem; }
+  .rank-1 { background:var(--gold-bg); color:var(--gold); border:1.5px solid rgba(212,160,0,.3); }
+  .rank-2 { background:#f8fafc; color:var(--silver); border:1.5px solid #cbd5e1; }
+  .rank-3 { background:#fff7ed; color:var(--bronze); border:1.5px solid rgba(146,64,14,.25); }
+  .rank-n { background:var(--surface2); color:var(--muted); border:1.5px solid var(--border); }
+  .pts-bar-wrap { display:flex; align-items:center; gap:10px; }
+  .pts-bar { height:7px; border-radius:4px; background:linear-gradient(90deg,#C1121F,#1D3557); min-width:4px; }
+  .pts-num { font-weight:900; font-size:1.05rem; }
+  .champ-chip { display:inline-flex; align-items:center; gap:6px; background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:3px 10px; font-size:.78rem; color:var(--muted); font-weight:600; }
+
+  /* ── MATCH CARDS ──────────────────────────── */
+  .match-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; }
+  .match-card { background:var(--surface); border:1.5px solid var(--border); border-radius:16px; padding:18px; cursor:pointer; transition:transform .2s,box-shadow .2s,border-color .2s; box-shadow:var(--shadow-sm); }
+  .match-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); border-color:#bfdbfe; }
+  .match-card.played { border-color:rgba(5,150,105,.25); background:linear-gradient(135deg,#fff,#f0fdf4); }
+  .match-status { font-size:.68rem; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:12px; font-weight:700; }
+  .played .match-status { color:var(--green); }
+  .pending .match-status { color:#b45309; }
+  .match-teams { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .team-side { text-align:center; flex:1; }
+  .team-flag-wrap { display:flex; justify-content:center; margin-bottom:6px; }
+  .team-flag-wrap .fi { box-shadow:0 2px 8px rgba(0,0,0,.18); }
+  .team-name { font-size:.78rem; font-weight:700; }
+  .score-display { text-align:center; padding:0 8px; }
+  .score-nums { font-size:2rem; font-weight:900; letter-spacing:3px; }
+  .score-vs { font-size:1rem; font-weight:700; color:var(--muted2); }
+  .match-votes { margin-top:14px; }
+  .vote-bar-row { display:flex; align-items:center; gap:7px; margin-bottom:6px; font-size:.75rem; }
+  .vote-label { min-width:80px; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:5px; }
+  .vote-bar-track { flex:1; background:#f1f5f9; border-radius:4px; height:8px; overflow:hidden; }
+  .vote-bar-fill { height:100%; border-radius:3px; transition:width .5s; }
+  .vote-count { min-width:22px; text-align:right; font-weight:800; }
+  .vb-a { background:linear-gradient(90deg,#0284c7,#0ea5e9); }
+  .vb-d { background:linear-gradient(90deg,#d97706,#f59e0b); }
+  .vb-b { background:linear-gradient(90deg,#dc2626,#C1121F); }
+
+  /* ── OVERLAY ─────────────────────────────── */
+  .overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.35); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:16px; }
+  .overlay.open { display:flex; }
+  .overlay-box { background:#fff; border:1px solid var(--border); border-radius:22px; max-width:520px; width:100%; max-height:85vh; overflow-y:auto; padding:26px; position:relative; box-shadow:var(--shadow-lg); }
+  .overlay-close { position:absolute; top:16px; right:18px; background:#f1f5f9; border:1px solid var(--border); color:var(--text); width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1rem; transition:background .2s; }
+  .overlay-close:hover { background:#fee2e2; }
+  .played-item { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+  .played-item-info { flex:1; }
+  .played-match-name { font-weight:800; font-size:.9rem; }
+  .played-pred { font-size:.78rem; color:var(--muted); margin-top:2px; }
+  .played-pts { font-size:1.4rem; font-weight:900; min-width:40px; text-align:right; }
+  .pts-3 { color:var(--gold); }
+  .pts-1 { color:var(--accent); }
+  .pts-0 { color:var(--muted2); }
+  .official-result { background:var(--green-bg); border:1.5px solid rgba(5,150,105,.25); border-radius:12px; padding:12px; text-align:center; margin-bottom:12px; }
+  .official-label { font-size:.68rem; color:var(--green); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px; font-weight:700; }
+  .official-score { font-size:1.5rem; font-weight:900; color:var(--green); display:flex; align-items:center; justify-content:center; gap:10px; }
+
+  /* ── INDIVIDUAL ──────────────────────────── */
+  .p-select-wrap { margin-bottom:20px; }
+  select { background:var(--surface); border:1.5px solid var(--border); color:var(--text); border-radius:12px; padding:11px 16px; font-size:.92rem; width:100%; appearance:none; outline:none; cursor:pointer; font-family:'Be Vietnam Pro',system-ui,sans-serif; font-weight:600; box-shadow:var(--shadow-sm); transition:border-color .2s; }
+  select:focus { border-color:#0284c7; }
+  .champs-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:22px; }
+  .champ-card { background:var(--surface2); border:1.5px solid var(--border); border-radius:14px; text-align:center; padding:14px 8px; box-shadow:var(--shadow-sm); transition:transform .2s,box-shadow .2s; }
+  .champ-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .champ-pos { font-size:.66rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px; font-weight:700; }
+  .champ-flag-wrap { display:flex; justify-content:center; margin-bottom:7px; }
+  .champ-flag-wrap .fi { box-shadow:0 3px 10px rgba(0,0,0,.15); }
+  .champ-team { font-size:.78rem; font-weight:800; }
+  .mpred-card { background:var(--surface2); border:1.5px solid var(--border); border-radius:16px; padding:20px; margin-top:12px; box-shadow:var(--shadow-sm); }
+  .mpred-teams { display:flex; align-items:center; justify-content:space-around; margin-bottom:16px; }
+  .mpred-team { text-align:center; }
+  .mpred-flag-wrap { display:flex; justify-content:center; margin-bottom:6px; }
+  .mpred-flag-wrap .fi { box-shadow:0 4px 14px rgba(0,0,0,.15); }
+  .mpred-tname { font-size:.82rem; font-weight:800; }
+  .mpred-scores { display:flex; gap:12px; justify-content:center; margin-bottom:16px; }
+  .mpred-score-box { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:12px 20px; text-align:center; min-width:80px; box-shadow:var(--shadow-sm); }
+  .score-tag { font-size:.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px; font-weight:700; }
+  .score-big { font-size:1.8rem; font-weight:900; }
+  .mpred-winner { text-align:center; margin-bottom:14px; }
+  .winner-label { font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:700; }
+  .winner-val { font-size:1.05rem; font-weight:800; margin-top:5px; }
+  .pts-earned { font-size:2.2rem; font-weight:900; }
+  .pts-earned-row { text-align:center; padding:8px 0; }
+  .pts-label-text { font-size:.85rem; color:var(--muted); margin-top:2px; font-weight:600; }
+  .played-list { display:flex; flex-direction:column; gap:10px; }
+  .chart-wrap { position:relative; height:240px; margin:16px 0; }
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:14px; margin-bottom:20px; }
+  .stat-card { background:var(--surface); border:1.5px solid var(--border); border-radius:14px; padding:16px; text-align:center; box-shadow:var(--shadow-sm); transition:transform .2s,box-shadow .2s; }
+  .stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .stat-icon { font-size:1.8rem; display:block; margin-bottom:6px; }
+  .stat-val { font-size:1.8rem; font-weight:900; color:var(--fifa-red); }
+  .stat-label { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:4px; font-weight:700; }
+
+  @media(max-width:480px){
+    .champs-grid { grid-template-columns:repeat(2,1fr); }
+    .match-grid { grid-template-columns:1fr; }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .podium-item { max-width:110px; }
+    .flags-strip { gap:8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top-bar"></div>
+  <div class="hero-deco"></div>
+  <div class="fifa-badge">⚽ FIFA World Cup 2026 ™</div>
+  <h1 class="hero-title">Gran Polla Familiar &amp; Amigos</h1>
+  <div class="hero-sub">🏆 Copa del Mundo 2026 &nbsp;·&nbsp; 20 participantes</div>
+  <div class="prize-badge">💰 Pozo: $400,000 COP</div>
+  <div class="created-by">Hecho con ❤️ por <strong>SOUZA WEICH</strong></div>
+  <div class="flags-strip" id="flagsStrip"></div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('leaderboard',this)"><span class="tab-icon">🏅</span>Posiciones</button>
+    <button class="tab-btn" onclick="showTab('matches',this)"><span class="tab-icon">⚽</span>Partidos</button>
+    <button class="tab-btn" onclick="showTab('individual',this)"><span class="tab-icon">🔍</span>Mi Pronóstico</button>
+  </div>
+</div>
+
+<div id="tab-leaderboard" class="tab-panel active">
+  <div class="card">
+    <div class="card-title"><span class="cicon">🏆</span>Tabla de Posiciones</div>
+    <div id="podium"></div>
+    <table class="lb-table" id="lbTable"></table>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="cicon">🌍</span>Distribución de Pronóstico de Campeón</div>
+    <div class="chart-wrap"><canvas id="champChart"></canvas></div>
+  </div>
+  <div class="stats-grid" id="statsGrid"></div>
+</div>
+
+<div id="tab-matches" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="cicon">✅</span>Partidos Jugados</div>
+    <div id="playedMatches" class="match-grid"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="cicon">⏳</span>Próximos Partidos</div>
+    <div id="pendingMatches" class="match-grid"></div>
+  </div>
+</div>
+
+<div id="tab-individual" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="cicon">👤</span>Selecciona tu nombre</div>
+    <div class="p-select-wrap"><select id="psel" onchange="renderIndividual()"></select></div>
+    <div id="indContent"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeOverlay(event)">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="document.getElementById('overlay').classList.remove('open')">✕</button>
+    <div id="overlayContent"></div>
+  </div>
+</div>
+
+<script>
+const P=[["Andres Souza", 4, "Francia", "España", "Brasil", "Argentina"], ["Ivania Souza Weich", 4, "Alemania", "Brasil", "España", "Portugal"], ["Santi Souza Peñaranda", 4, "Francia", "España", "Portugal", "Bélgica"], ["Analucia Zarama Souza", 3, "Alemania", "Brasil", "Francia", "Argentina"], ["Carlos Moreno Ibarguen", 3, "Inglaterra", "Alemania", "Colombia", "Portugal"], ["Oscar Parra", 3, "Alemania", "Brasil", "Argentina", "Colombia"], ["Andres Felipe Souza", 3, "España", "Francia", "Argentina", "Portugal"], ["Kiki", 3, "Argentina", "España", "Francia", "Brasil"], ["Ivania Cerón Souza", 2, "Francia", "Argentina", "España", "Croacia"], ["Omar Augusto Peña Ardila", 2, "Brasil", "Países Bajos", "Paraguay", "Portugal"], ["Debora Fabiola Mesias Losano", 2, "Colombia", "Paraguay", "Brasil", "Alemania"], ["Roberto Souza Weich", 2, "Brasil", "Croacia", "Países Bajos", "España"], ["Mercedes Souza", 1, "Francia", "Brasil", "España", "Portugal"], ["Hermann Souza Weich", 1, "Brasil", "Francia", "Alemania", "Argentina"], ["Martín Moreno Cerón", 1, "Japón", "Colombia", "Brasil", "Austria"], ["Virginia Ceron Souza", 1, "Argentina", "Francia", "Brasil", "España"], ["Frenando García Ortega", 1, "Inglaterra", "Portugal", "Países Bajos", "República Checa"], ["Maria Eugenia Santacruz", 0, "Ecuador", "Brasil", "Argentina", "Ghana"], ["Juan Camilo García Souza", 0, "España", "Francia", "Japón", "Argentina"], ["Julio Souza Weich", 0, "Francia", "Inglaterra", "España", "Portugal"]];
+const M=[{"n": "México vs Sudáfrica", "ta": "México", "tb": "Sudáfrica", "p": 1, "ga": 2, "gb": 0}, {"n": "Corea del sur vs República Checa", "ta": "Corea del sur", "tb": "República Checa", "p": 1, "ga": 2, "gb": 1}, {"n": "Canadá vs Bosnia Herzegovina", "ta": "Canadá", "tb": "Bosnia Herzegovina", "p": 0, "ga": null, "gb": null}, {"n": "Estados Unidos vs Paraguay", "ta": "Estados Unidos", "tb": "Paraguay", "p": 0, "ga": null, "gb": null}, {"n": "Catar vs Suiza", "ta": "Catar", "tb": "Suiza", "p": 0, "ga": null, "gb": null}, {"n": "Brasil vs Marruecos", "ta": "Brasil", "tb": "Marruecos", "p": 0, "ga": null, "gb": null}, {"n": "Haití vs Escocia", "ta": "Haití", "tb": "Escocia", "p": 0, "ga": null, "gb": null}, {"n": "Australia vs Turquía", "ta": "Australia", "tb": "Turquía", "p": 0, "ga": null, "gb": null}, {"n": "Alemania vs Curazao", "ta": "Alemania", "tb": "Curazao", "p": 0, "ga": null, "gb": null}, {"n": "Países Bajos vs Japón", "ta": "Países Bajos", "tb": "Japón", "p": 0, "ga": null, "gb": null}, {"n": "Costa de marfil vs Ecuador", "ta": "Costa de marfil", "tb": "Ecuador", "p": 0, "ga": null, "gb": null}, {"n": "Suecia vs Túnez", "ta": "Suecia", "tb": "Túnez", "p": 0, "ga": null, "gb": null}, {"n": "España vs Cabo Verde", "ta": "España", "tb": "Cabo Verde", "p": 0, "ga": null, "gb": null}, {"n": "Bélgica vs Egipto", "ta": "Bélgica", "tb": "Egipto", "p": 0, "ga": null, "gb": null}, {"n": "Arabia Saudita vs Uruguay", "ta": "Arabia Saudita", "tb": "Uruguay", "p": 0, "ga": null, "gb": null}, {"n": "Irán vs Nueva Zelanda", "ta": "Irán", "tb": "Nueva Zelanda", "p": 0, "ga": null, "gb": null}, {"n": "Francia vs Senegal", "ta": "Francia", "tb": "Senegal", "p": 0, "ga": null, "gb": null}, {"n": "Irak vs Noruega", "ta": "Irak", "tb": "Noruega", "p": 0, "ga": null, "gb": null}, {"n": "Argentina vs Argelia", "ta": "Argentina", "tb": "Argelia", "p": 0, "ga": null, "gb": null}, {"n": "Austria vs Jordania", "ta": "Austria", "tb": "Jordania", "p": 0, "ga": null, "gb": null}, {"n": "Portugal vs RD Congo", "ta": "Portugal", "tb": "RD Congo", "p": 0, "ga": null, "gb": null}, {"n": "Inglaterra vs Croacia", "ta": "Inglaterra", "tb": "Croacia", "p": 0, "ga": null, "gb": null}, {"n": "Ghana vs Panamá", "ta": "Ghana", "tb": "Panamá", "p": 0, "ga": null, "gb": null}, {"n": "Uzbekistán vs Colombia", "ta": "Uzbekistán", "tb": "Colombia", "p": 0, "ga": null, "gb": null}, {"n": "República Checa vs Sudáfrica", "ta": "República Checa", "tb": "Sudáfrica", "p": 0, "ga": null, "gb": null}, {"n": "Suiza vs Bosnia Herzegovina", "ta": "Suiza", "tb": "Bosnia Herzegovina", "p": 0, "ga": null, "gb": null}, {"n": "Canadá vs Catar", "ta": "Canadá", "tb": "Catar", "p": 0, "ga": null, "gb": null}, {"n": "México vs Corea del Sur", "ta": "México", "tb": "Corea del Sur", "p": 0, "ga": null, "gb": null}, {"n": "Estados Unidos vs Australia", "ta": "Estados Unidos", "tb": "Australia", "p": 0, "ga": null, "gb": null}, {"n": "Escocia vs Marruecos", "ta": "Escocia", "tb": "Marruecos", "p": 0, "ga": null, "gb": null}, {"n": "Brasil vs Haiti", "ta": "Brasil", "tb": "Haiti", "p": 0, "ga": null, "gb": null}, {"n": "Turquía vs Paraguay", "ta": "Turquía", "tb": "Paraguay", "p": 0, "ga": null, "gb": null}, {"n": "Países Bajos vs Suecia", "ta": "Países Bajos", "tb": "Suecia", "p": 0, "ga": null, "gb": null}, {"n": "Alemania vs Costa de Marfil", "ta": "Alemania", "tb": "Costa de Marfil", "p": 0, "ga": null, "gb": null}, {"n": "Ecuador vs Curazao", "ta": "Ecuador", "tb": "Curazao", "p": 0, "ga": null, "gb": null}, {"n": "Túnez vs Japón", "ta": "Túnez", "tb": "Japón", "p": 0, "ga": null, "gb": null}, {"n": "España vs Arabia Saudita", "ta": "España", "tb": "Arabia Saudita", "p": 0, "ga": null, "gb": null}, {"n": "Bélgica vs Iran", "ta": "Bélgica", "tb": "Iran", "p": 0, "ga": null, "gb": null}, {"n": "Uruguay  vs Cabo Verde", "ta": "Uruguay ", "tb": "Cabo Verde", "p": 0, "ga": null, "gb": null}, {"n": "Nueva Zelanda vs Egipto", "ta": "Nueva Zelanda", "tb": "Egipto", "p": 0, "ga": null, "gb": null}, {"n": "Argentina vs Austria", "ta": "Argentina", "tb": "Austria", "p": 0, "ga": null, "gb": null}, {"n": "Francia vs Irak", "ta": "Francia", "tb": "Irak", "p": 0, "ga": null, "gb": null}, {"n": "Noruega vs Senegal", "ta": "Noruega", "tb": "Senegal", "p": 0, "ga": null, "gb": null}, {"n": "Jordania vs Argelia", "ta": "Jordania", "tb": "Argelia", "p": 0, "ga": null, "gb": null}, {"n": "Portugal vs Uzbekistán", "ta": "Portugal", "tb": "Uzbekistán", "p": 0, "ga": null, "gb": null}, {"n": "Inglaterra vs Ghana", "ta": "Inglaterra", "tb": "Ghana", "p": 0, "ga": null, "gb": null}, {"n": "Panamá vs Croacia", "ta": "Panamá", "tb": "Croacia", "p": 0, "ga": null, "gb": null}, {"n": "Colombia vs RD Congo", "ta": "Colombia", "tb": "RD Congo", "p": 0, "ga": null, "gb": null}, {"n": "Suiza vs Canadá", "ta": "Suiza", "tb": "Canadá", "p": 0, "ga": null, "gb": null}, {"n": "Bosnia y Herzegovina vs Catar", "ta": "Bosnia y Herzegovina", "tb": "Catar", "p": 0, "ga": null, "gb": null}, {"n": "Marruecos vs Haiti", "ta": "Marruecos", "tb": "Haiti", "p": 0, "ga": null, "gb": null}, {"n": "Escocia vs Brasil", "ta": "Escocia", "tb": "Brasil", "p": 0, "ga": null, "gb": null}, {"n": "Sudáfrica vs Corea del sur", "ta": "Sudáfrica", "tb": "Corea del sur", "p": 0, "ga": null, "gb": null}, {"n": "República Checa vs México", "ta": "República Checa", "tb": "México", "p": 0, "ga": null, "gb": null}, {"n": "Curazao vs Costa de Marfil", "ta": "Curazao", "tb": "Costa de Marfil", "p": 0, "ga": null, "gb": null}, {"n": "Ecuador vs Alemania", "ta": "Ecuador", "tb": "Alemania", "p": 0, "ga": null, "gb": null}, {"n": "Túnez vs Países Bajos", "ta": "Túnez", "tb": "Países Bajos", "p": 0, "ga": null, "gb": null}, {"n": "Japón vs Suecia", "ta": "Japón", "tb": "Suecia", "p": 0, "ga": null, "gb": null}, {"n": "Turquía vs Estados Unidos", "ta": "Turquía", "tb": "Estados Unidos", "p": 0, "ga": null, "gb": null}, {"n": "Paraguay vs Australia", "ta": "Paraguay", "tb": "Australia", "p": 0, "ga": null, "gb": null}, {"n": "Noruega vs Francia", "ta": "Noruega", "tb": "Francia", "p": 0, "ga": null, "gb": null}, {"n": "Senegal vs Irak", "ta": "Senegal", "tb": "Irak", "p": 0, "ga": null, "gb": null}, {"n": "Cabo Verde vs Arabia Saudita", "ta": "Cabo Verde", "tb": "Arabia Saudita", "p": 0, "ga": null, "gb": null}, {"n": "Uruguay vs España", "ta": "Uruguay", "tb": "España", "p": 0, "ga": null, "gb": null}, {"n": "Nueva Zelanda vs Bélgica", "ta": "Nueva Zelanda", "tb": "Bélgica", "p": 0, "ga": null, "gb": null}, {"n": "Egipto vs Irán", "ta": "Egipto", "tb": "Irán", "p": 0, "ga": null, "gb": null}, {"n": "Panamá vs Inglaterra", "ta": "Panamá", "tb": "Inglaterra", "p": 0, "ga": null, "gb": null}, {"n": "Croacia vs Ghana", "ta": "Croacia", "tb": "Ghana", "p": 0, "ga": null, "gb": null}, {"n": "Colombia vs Portugal", "ta": "Colombia", "tb": "Portugal", "p": 0, "ga": null, "gb": null}, {"n": "RD Congo vs Uzbekistan", "ta": "RD Congo", "tb": "Uzbekistan", "p": 0, "ga": null, "gb": null}, {"n": "Argelia vs Austria", "ta": "Argelia", "tb": "Austria", "p": 0, "ga": null, "gb": null}, {"n": "Jordania vs Argentina", "ta": "Jordania", "tb": "Argentina", "p": 0, "ga": null, "gb": null}];
+const PREDS=[[[3, 0, 1, 1], [2, 1, 1, 3], [3, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [4, 0, 1, 0], [0, 3, 3, 0], [2, 1, 1, 0], [4, 0, 1, 0], [3, 1, 1, 0], [0, 3, 3, 0], [2, 1, 1, 0], [4, 0, 1, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 1, 2, 0], [4, 0, 1, 0], [0, 1, 3, 0], [3, 0, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [3, 1, 1, 0], [1, 1, 2, 0], [0, 2, 3, 0], [0, 1, 3, 0], [1, 0, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [4, 0, 1, 0], [0, 2, 3, 0], [3, 1, 1, 0], [4, 0, 1, 0], [2, 0, 1, 0], [0, 2, 3, 0], [3, 0, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [1, 1, 2, 0], [3, 0, 1, 0], [4, 0, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [3, 0, 1, 0], [3, 0, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [2, 1, 1, 0], [0, 1, 3, 0], [2, 1, 1, 0], [1, 3, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [0, 1, 3, 0], [1, 3, 3, 0], [1, 2, 3, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [1, 3, 3, 0], [2, 0, 1, 0], [1, 0, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 2, 3, 0], [0, 3, 3, 0], [2, 0, 1, 0], [2, 2, 2, 0], [0, 1, 3, 0], [1, 2, 3, 0], [0, 3, 3, 0]], [[2, 0, 1, 3], [1, 0, 1, 1], [2, 1, 1, 0], [2, 2, 2, 0], [1, 3, 3, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 0, 1, 0], [3, 0, 1, 0], [3, 2, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [3, 1, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 2, 2, 0], [3, 1, 1, 0], [1, 1, 2, 0], [4, 2, 1, 0], [2, 2, 2, 0], [2, 0, 1, 0], [2, 2, 2, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [1, 1, 2, 0], [3, 0, 1, 0], [1, 0, 1, 0], [2, 2, 2, 0], [3, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [3, 2, 1, 0], [2, 1, 1, 0], [1, 3, 3, 0], [2, 0, 1, 0], [3, 1, 1, 0], [3, 2, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [3, 0, 1, 0], [1, 0, 1, 0], [2, 2, 2, 0], [3, 0, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 2, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 3, 3, 0], [2, 1, 1, 0], [0, 1, 3, 0], [1, 1, 2, 0], [2, 3, 3, 0], [1, 3, 3, 0], [2, 2, 2, 0], [0, 2, 3, 0], [1, 1, 2, 0], [0, 3, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [2, 2, 2, 0], [1, 3, 3, 0], [1, 3, 3, 0], [1, 3, 3, 0], [2, 0, 1, 0], [0, 3, 3, 0], [1, 1, 2, 0], [1, 3, 3, 0], [1, 3, 3, 0]], [[2, 0, 1, 3], [1, 0, 1, 1], [2, 1, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 0, 2, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 1, 1, 0], [0, 1, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 2, 2, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 0, 1, 0], [1, 0, 1, 0], [1, 1, 2, 0], [1, 0, 1, 0], [1, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [2, 1, 1, 0], [1, 0, 1, 0], [2, 0, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [3, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [1, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 0, 1, 0], [0, 1, 3, 0], [0, 0, 2, 0], [1, 1, 2, 0], [0, 0, 2, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 1, 2, 0], [0, 1, 3, 0], [1, 1, 2, 0], [2, 3, 3, 0], [1, 1, 2, 0], [0, 1, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [2, 2, 2, 0], [0, 0, 2, 0], [0, 1, 3, 0], [0, 1, 3, 0]], [[2, 0, 1, 3], [1, 1, 2, 0], [1, 1, 2, 0], [2, 0, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [0, 1, 3, 0], [0, 3, 3, 0], [6, 0, 1, 0], [3, 1, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [3, 0, 1, 0], [2, 0, 1, 0], [0, 3, 3, 0], [1, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [3, 1, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [4, 0, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [3, 0, 1, 0], [3, 1, 1, 0], [0, 2, 3, 0], [3, 0, 1, 0], [3, 0, 1, 0], [3, 1, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [3, 1, 1, 0], [1, 1, 2, 0], [0, 1, 3, 0], [3, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [3, 0, 1, 0], [1, 3, 3, 0], [0, 2, 3, 0], [1, 2, 3, 0], [0, 3, 3, 0], [1, 2, 3, 0], [0, 3, 3, 0], [1, 1, 2, 0], [1, 1, 2, 0], [1, 0, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [1, 0, 1, 0], [1, 1, 2, 0], [0, 4, 3, 0], [1, 0, 1, 0], [0, 3, 3, 0], [2, 1, 1, 0], [1, 2, 3, 0], [1, 0, 1, 0], [1, 2, 3, 0], [0, 4, 3, 0]], [[2, 0, 1, 3], [1, 1, 2, 0], [2, 1, 1, 0], [1, 0, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 2, 3, 0], [4, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 0, 1, 0], [3, 0, 1, 0], [2, 0, 1, 0], [0, 3, 3, 0], [1, 0, 1, 0], [2, 0, 1, 0], [0, 3, 3, 0], [3, 1, 1, 0], [2, 0, 1, 0], [3, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [0, 2, 3, 0], [2, 1, 1, 0], [2, 0, 1, 0], [3, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [4, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [3, 0, 1, 0], [0, 2, 3, 0], [3, 1, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [4, 0, 1, 0], [1, 1, 2, 0], [1, 2, 3, 0], [2, 0, 1, 0], [3, 1, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [2, 0, 1, 0], [0, 3, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [0, 2, 3, 0], [1, 2, 3, 0], [0, 3, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [3, 0, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 4, 3, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [1, 1, 2, 0], [0, 4, 3, 0]], [[2, 0, 1, 3], [1, 1, 2, 0], [2, 1, 1, 0], [2, 2, 2, 0], [1, 0, 1, 0], [3, 1, 1, 0], [1, 2, 3, 0], [0, 2, 3, 0], [3, 0, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [3, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [3, 2, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [1, 1, 2, 0], [3, 1, 1, 0], [2, 2, 2, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 0, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [3, 0, 1, 0], [2, 2, 2, 0], [3, 2, 1, 0], [3, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [3, 1, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [3, 1, 1, 0], [2, 0, 1, 0], [1, 3, 3, 0], [3, 1, 1, 0], [1, 1, 2, 0], [0, 0, 2, 0], [3, 0, 1, 0], [1, 3, 3, 0], [1, 2, 3, 0], [1, 2, 3, 0], [1, 1, 2, 0], [1, 3, 3, 0], [1, 3, 3, 0], [2, 2, 2, 0], [3, 2, 1, 0], [2, 1, 1, 0], [1, 3, 3, 0], [1, 1, 2, 0], [0, 0, 2, 0], [2, 2, 2, 0], [1, 2, 3, 0], [2, 0, 1, 0], [1, 3, 3, 0], [3, 2, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 3, 3, 0]], [[2, 0, 1, 3], [1, 1, 2, 0], [2, 1, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [4, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 0, 1, 0], [4, 0, 1, 0], [2, 0, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [0, 2, 3, 0], [3, 0, 1, 0], [2, 0, 1, 0], [3, 0, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 0, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [4, 0, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 0, 1, 0], [0, 2, 3, 0], [3, 0, 1, 0], [2, 0, 1, 0], [3, 0, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [3, 0, 1, 0], [1, 1, 2, 0], [0, 2, 3, 0], [2, 0, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [1, 1, 2, 0], [1, 1, 2, 0], [2, 1, 1, 0], [2, 0, 1, 0], [1, 2, 3, 0], [1, 2, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 3, 3, 0], [0, 2, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 2, 3, 0], [2, 0, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [0, 3, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [2, 1, 1, 0], [1, 1, 2, 0], [0, 1, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0]], [[2, 0, 1, 3], [1, 1, 2, 0], [2, 1, 1, 0], [2, 0, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 1, 2, 0], [4, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [3, 0, 1, 0], [3, 0, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [3, 0, 1, 0], [3, 1, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 0, 1, 0], [0, 2, 3, 0], [1, 2, 3, 0], [2, 1, 1, 0], [3, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 2, 3, 0], [4, 0, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [3, 0, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [3, 0, 1, 0], [1, 1, 2, 0], [0, 2, 3, 0], [3, 0, 1, 0], [3, 0, 1, 0], [0, 1, 3, 0], [2, 1, 1, 0], [2, 1, 1, 0], [3, 0, 1, 0], [3, 0, 1, 0], [0, 2, 3, 0], [1, 2, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 2, 3, 0], [0, 3, 3, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [0, 3, 3, 0]], [[1, 0, 1, 1], [2, 0, 1, 1], [1, 0, 1, 0], [2, 1, 1, 0], [0, 0, 2, 0], [3, 0, 1, 0], [0, 1, 3, 0], [1, 1, 2, 0], [3, 0, 1, 0], [0, 1, 3, 0], [1, 2, 3, 0], [1, 0, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [2, 1, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [1, 0, 1, 0], [1, 0, 1, 0], [1, 2, 3, 0], [1, 0, 1, 0], [0, 1, 3, 0], [1, 0, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [1, 0, 1, 0], [6, 0, 1, 0], [1, 2, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [3, 0, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [2, 1, 1, 0], [3, 0, 1, 0], [1, 2, 3, 0], [0, 0, 2, 0], [1, 0, 1, 0], [1, 0, 1, 0], [0, 3, 3, 0], [1, 0, 1, 0], [1, 3, 3, 0], [0, 1, 3, 0], [1, 1, 2, 0], [1, 3, 3, 0], [1, 2, 3, 0], [1, 2, 3, 0], [0, 2, 3, 0], [1, 1, 2, 0], [0, 1, 3, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [0, 2, 3, 0], [0, 0, 2, 0], [0, 3, 3, 0], [3, 1, 1, 0], [2, 1, 1, 0], [0, 0, 2, 0], [0, 1, 3, 0], [0, 2, 3, 0]], [[2, 1, 1, 1], [3, 1, 1, 1], [1, 0, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [4, 0, 1, 0], [3, 2, 1, 0], [1, 3, 3, 0], [2, 1, 1, 0], [3, 1, 1, 0], [3, 1, 1, 0], [1, 3, 3, 0], [1, 3, 3, 0], [2, 1, 1, 0], [1, 2, 3, 0], [4, 1, 1, 0], [3, 1, 1, 0], [3, 1, 1, 0], [2, 2, 2, 0], [0, 1, 3, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [3, 1, 1, 0], [3, 1, 1, 0], [4, 1, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [4, 1, 1, 0], [3, 1, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [2, 1, 1, 0], [4, 1, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [3, 1, 1, 0], [2, 2, 2, 0], [0, 2, 3, 0], [3, 0, 1, 0], [3, 1, 1, 0], [1, 3, 3, 0], [1, 0, 1, 0], [3, 1, 1, 0], [0, 0, 2, 0], [3, 1, 1, 0], [0, 2, 3, 0], [2, 2, 2, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 2, 2, 0], [1, 3, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [3, 1, 1, 0], [2, 3, 3, 0], [3, 1, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [0, 3, 3, 0], [3, 1, 1, 0], [1, 1, 2, 0], [0, 2, 3, 0], [0, 2, 3, 0], [0, 3, 3, 0]], [[1, 0, 1, 1], [1, 0, 1, 1], [1, 0, 1, 0], [1, 2, 3, 0], [1, 0, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 2, 2, 0], [2, 2, 2, 0], [3, 1, 1, 0], [1, 1, 2, 0], [1, 2, 3, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [4, 1, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [3, 2, 1, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 1, 3, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [2, 0, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [1, 2, 3, 0], [3, 1, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [1, 2, 3, 0], [3, 1, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [3, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 2, 3, 0], [1, 1, 2, 0], [0, 1, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 1, 2, 0], [3, 2, 1, 0], [1, 0, 1, 0], [0, 0, 2, 0], [2, 3, 3, 0], [1, 1, 2, 0], [0, 0, 2, 0], [3, 3, 2, 0], [2, 1, 1, 0], [2, 2, 2, 0], [1, 3, 3, 0], [3, 1, 1, 0], [2, 1, 1, 0], [0, 0, 2, 0], [1, 2, 3, 0], [1, 2, 3, 0]], [[2, 1, 1, 1], [3, 2, 1, 1], [2, 2, 2, 0], [2, 2, 2, 0], [2, 1, 1, 0], [3, 1, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [0, 1, 3, 0], [3, 1, 1, 0], [3, 1, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [3, 1, 1, 0], [3, 0, 1, 0], [2, 2, 2, 0], [3, 1, 1, 0], [2, 1, 1, 0], [3, 1, 1, 0], [2, 2, 2, 0], [3, 1, 1, 0], [1, 3, 3, 0], [1, 1, 2, 0], [3, 1, 1, 0], [1, 2, 3, 0], [2, 2, 2, 0], [0, 1, 3, 0], [0, 1, 3, 0], [4, 0, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [3, 1, 1, 0], [1, 3, 3, 0], [1, 0, 1, 0], [2, 2, 2, 0], [2, 2, 2, 0], [0, 1, 3, 0], [3, 2, 1, 0], [2, 1, 1, 0], [3, 0, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [2, 0, 1, 0], [0, 3, 3, 0], [2, 1, 1, 0], [2, 2, 2, 0], [0, 1, 3, 0], [1, 1, 2, 0], [1, 3, 3, 0], [1, 2, 3, 0], [1, 3, 3, 0], [0, 2, 3, 0], [2, 2, 2, 0], [1, 3, 3, 0], [2, 2, 2, 0], [1, 3, 3, 0], [2, 1, 1, 0], [2, 3, 3, 0], [1, 1, 2, 0], [2, 2, 2, 0], [2, 3, 3, 0], [2, 2, 2, 0], [1, 2, 3, 0], [0, 4, 3, 0], [2, 0, 1, 0], [2, 2, 2, 0], [1, 1, 2, 0], [2, 2, 2, 0], [0, 3, 3, 0]], [[1, 0, 1, 1], [0, 0, 2, 0], [3, 1, 1, 0], [0, 3, 3, 0], [2, 1, 1, 0], [3, 0, 1, 0], [0, 1, 3, 0], [2, 2, 2, 0], [4, 0, 1, 0], [2, 2, 2, 0], [2, 4, 3, 0], [2, 0, 1, 0], [5, 0, 1, 0], [2, 0, 1, 0], [0, 3, 3, 0], [2, 0, 1, 0], [6, 0, 1, 0], [0, 2, 3, 0], [7, 2, 1, 0], [2, 2, 2, 0], [5, 0, 1, 0], [2, 2, 2, 0], [0, 1, 3, 0], [0, 2, 3, 0], [1, 0, 1, 0], [2, 0, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [4, 0, 1, 0], [0, 3, 3, 0], [0, 2, 3, 0], [4, 0, 1, 0], [3, 0, 1, 0], [0, 3, 3, 0], [2, 0, 1, 0], [3, 3, 2, 0], [2, 0, 1, 0], [0, 2, 3, 0], [6, 0, 1, 0], [5, 0, 1, 0], [3, 0, 1, 0], [0, 0, 2, 0], [3, 0, 1, 0], [2, 0, 1, 0], [0, 4, 3, 0], [2, 1, 1, 0], [2, 1, 1, 0], [0, 3, 3, 0], [2, 2, 2, 0], [2, 2, 2, 0], [2, 2, 2, 0], [1, 2, 3, 0], [2, 2, 2, 0], [2, 3, 3, 0], [2, 0, 1, 0], [3, 1, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 2, 2, 0], [1, 1, 2, 0], [2, 2, 2, 0], [0, 2, 3, 0], [2, 2, 2, 0], [1, 3, 3, 0], [3, 0, 1, 0], [0, 3, 3, 0], [2, 2, 2, 0], [0, 0, 2, 0], [0, 3, 3, 0]], [[2, 1, 1, 1], [0, 1, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 1, 3, 0], [2, 1, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [3, 0, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [1, 0, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [1, 0, 1, 0], [0, 0, 2, 0], [1, 0, 1, 0], [1, 2, 3, 0], [1, 0, 1, 0], [1, 0, 1, 0], [0, 2, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [0, 0, 2, 0], [0, 1, 3, 0], [1, 0, 1, 0], [1, 2, 3, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 0, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [0, 1, 3, 0], [1, 0, 1, 0], [0, 0, 2, 0], [0, 3, 3, 0]], [[1, 0, 1, 1], [0, 2, 3, 0], [1, 1, 2, 0], [2, 0, 1, 0], [1, 2, 3, 0], [3, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [3, 0, 1, 0], [1, 1, 2, 0], [0, 2, 3, 0], [1, 0, 1, 0], [1, 0, 1, 0], [1, 0, 1, 0], [0, 0, 2, 0], [1, 2, 3, 0], [2, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [0, 0, 2, 0], [2, 1, 1, 0], [1, 0, 1, 0], [2, 0, 1, 0], [1, 3, 3, 0], [1, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [1, 0, 1, 0], [1, 1, 2, 0], [3, 0, 1, 0], [0, 1, 3, 0], [0, 0, 2, 0], [2, 0, 1, 0], [1, 0, 1, 0], [0, 1, 3, 0], [1, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 0, 1, 0], [3, 0, 1, 0], [1, 1, 2, 0], [0, 0, 2, 0], [1, 0, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 0, 1, 0], [2, 1, 1, 0], [0, 0, 2, 0], [0, 0, 2, 0], [0, 1, 3, 0], [0, 2, 3, 0], [2, 1, 1, 0], [0, 1, 3, 0], [1, 1, 2, 0], [0, 1, 3, 0], [1, 1, 2, 0], [1, 1, 2, 0], [1, 0, 1, 0], [1, 2, 3, 0], [0, 0, 2, 0], [0, 0, 2, 0], [0, 0, 2, 0], [1, 1, 2, 0], [1, 0, 1, 0], [0, 3, 3, 0], [0, 0, 2, 0], [1, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [0, 1, 3, 0]], [[1, 0, 1, 1], [1, 2, 3, 0], [1, 2, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [3, 1, 1, 0], [0, 2, 3, 0], [1, 0, 1, 0], [3, 0, 1, 0], [1, 2, 3, 0], [2, 2, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 2, 3, 0], [0, 2, 3, 0], [2, 1, 1, 0], [0, 1, 3, 0], [4, 0, 1, 0], [1, 0, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [0, 2, 3, 0], [2, 2, 2, 0], [2, 1, 1, 0], [2, 0, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [1, 1, 2, 0], [3, 0, 1, 0], [0, 2, 3, 0], [1, 1, 2, 0], [2, 2, 2, 0], [2, 0, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [3, 1, 1, 0], [3, 0, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [3, 0, 1, 0], [3, 1, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 1, 2, 0], [0, 0, 2, 0], [0, 3, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [0, 2, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [2, 1, 1, 0], [1, 3, 3, 0], [1, 0, 1, 0], [0, 1, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 1, 2, 0], [0, 2, 3, 0], [2, 1, 1, 0], [2, 3, 3, 0], [1, 1, 2, 0], [1, 1, 2, 0], [1, 1, 2, 0]], [[1, 0, 1, 1], [0, 2, 3, 0], [2, 2, 2, 0], [0, 1, 3, 0], [1, 2, 3, 0], [3, 1, 1, 0], [0, 3, 3, 0], [0, 2, 3, 0], [3, 0, 1, 0], [3, 3, 2, 0], [2, 2, 2, 0], [2, 2, 2, 0], [4, 0, 1, 0], [2, 0, 1, 0], [1, 3, 3, 0], [2, 0, 1, 0], [4, 2, 1, 0], [1, 3, 3, 0], [3, 0, 1, 0], [3, 0, 1, 0], [3, 0, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [2, 2, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [0, 2, 3, 0], [1, 2, 3, 0], [4, 0, 1, 0], [2, 0, 1, 0], [1, 1, 2, 0], [3, 0, 1, 0], [3, 1, 1, 0], [2, 3, 3, 0], [4, 0, 1, 0], [3, 2, 1, 0], [3, 0, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [3, 0, 1, 0], [2, 0, 1, 0], [1, 3, 3, 0], [4, 1, 1, 0], [3, 0, 1, 0], [1, 3, 3, 0], [3, 1, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [3, 1, 1, 0], [2, 1, 1, 0], [2, 1, 1, 0], [3, 1, 1, 0], [0, 0, 2, 0], [2, 2, 2, 0], [0, 3, 3, 0], [2, 2, 2, 0], [1, 0, 1, 0], [2, 2, 2, 0], [2, 1, 1, 0], [3, 3, 2, 0], [2, 0, 1, 0], [2, 3, 3, 0], [0, 3, 3, 0], [2, 3, 3, 0], [1, 3, 3, 0], [4, 0, 1, 0], [3, 3, 2, 0], [2, 2, 2, 0], [2, 0, 1, 0], [1, 4, 3, 0]], [[2, 3, 3, 0], [1, 3, 3, 0], [3, 1, 1, 0], [0, 2, 3, 0], [1, 2, 3, 0], [3, 2, 1, 0], [1, 2, 3, 0], [1, 2, 3, 0], [3, 0, 1, 0], [1, 0, 1, 0], [1, 2, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [2, 3, 3, 0], [2, 2, 2, 0], [2, 3, 3, 0], [1, 2, 3, 0], [2, 3, 3, 0], [1, 1, 2, 0], [0, 1, 3, 0], [1, 2, 3, 0], [2, 3, 3, 0], [2, 0, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 1, 2, 0], [1, 3, 3, 0], [1, 2, 3, 0], [4, 2, 1, 0], [0, 2, 3, 0], [2, 3, 3, 0], [1, 1, 2, 0], [3, 0, 1, 0], [2, 1, 1, 0], [0, 1, 3, 0], [1, 2, 3, 0], [0, 1, 3, 0], [2, 3, 3, 0], [1, 2, 3, 0], [2, 3, 3, 0], [1, 2, 3, 0], [3, 0, 1, 0], [1, 3, 3, 0], [2, 1, 1, 0], [0, 3, 3, 0], [0, 2, 3, 0], [1, 1, 2, 0], [2, 1, 1, 0], [0, 1, 3, 0], [1, 3, 3, 0], [3, 0, 1, 0], [1, 0, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [2, 3, 3, 0], [2, 3, 3, 0], [2, 0, 1, 0], [3, 1, 1, 0], [2, 0, 1, 0], [1, 0, 1, 0], [3, 2, 1, 0], [1, 2, 3, 0], [3, 1, 1, 0], [1, 2, 3, 0], [1, 3, 3, 0], [1, 2, 3, 0], [0, 3, 3, 0], [2, 3, 3, 0], [1, 0, 1, 0], [0, 1, 3, 0]], [[0, 2, 3, 0], [1, 1, 2, 0], [3, 0, 1, 0], [2, 2, 2, 0], [1, 0, 1, 0], [3, 2, 1, 0], [1, 0, 1, 0], [2, 1, 1, 0], [3, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [4, 0, 1, 0], [3, 0, 1, 0], [4, 1, 1, 0], [2, 0, 1, 0], [3, 0, 1, 0], [4, 0, 1, 0], [3, 0, 1, 0], [0, 0, 2, 0], [2, 0, 1, 0], [1, 0, 1, 0], [0, 1, 3, 0], [0, 3, 3, 0], [0, 0, 2, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [2, 0, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [3, 0, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [3, 0, 1, 0], [0, 0, 2, 0], [2, 0, 1, 0], [0, 1, 3, 0], [3, 0, 1, 0], [2, 0, 1, 0], [2, 2, 2, 0], [0, 1, 3, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 3, 3, 0], [2, 0, 1, 0], [1, 2, 3, 0], [0, 4, 3, 0], [3, 0, 1, 0], [1, 4, 3, 0], [1, 0, 1, 0], [0, 2, 3, 0], [0, 2, 3, 0], [1, 0, 1, 0], [0, 1, 3, 0], [1, 0, 1, 0], [1, 0, 1, 0], [1, 0, 1, 0], [1, 1, 2, 0], [1, 0, 1, 0], [0, 0, 2, 0], [1, 2, 3, 0], [0, 2, 3, 0], [1, 0, 1, 0], [0, 2, 3, 0], [2, 0, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [0, 1, 3, 0], [0, 5, 3, 0]], [[1, 1, 2, 0], [1, 2, 3, 0], [0, 1, 3, 0], [0, 0, 2, 0], [0, 2, 3, 0], [2, 1, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [2, 0, 1, 0], [1, 0, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [0, 2, 3, 0], [2, 1, 1, 0], [2, 0, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [2, 1, 1, 0], [2, 0, 1, 0], [2, 2, 2, 0], [1, 1, 2, 0], [2, 2, 2, 0], [2, 2, 2, 0], [2, 1, 1, 0], [2, 1, 1, 0], [1, 0, 1, 0], [1, 1, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [2, 1, 1, 0], [2, 2, 2, 0], [2, 0, 1, 0], [2, 0, 1, 0], [1, 2, 3, 0], [3, 0, 1, 0], [2, 1, 1, 0], [2, 2, 2, 0], [1, 2, 3, 0], [2, 1, 1, 0], [3, 1, 1, 0], [2, 1, 1, 0], [2, 2, 2, 0], [2, 0, 1, 0], [3, 1, 1, 0], [1, 2, 3, 0], [2, 1, 1, 0], [1, 1, 2, 0], [1, 0, 1, 0], [2, 1, 1, 0], [1, 2, 3, 0], [0, 1, 3, 0], [1, 1, 2, 0], [1, 2, 3, 0], [1, 2, 3, 0], [0, 2, 3, 0], [1, 2, 3, 0], [1, 2, 3, 0], [2, 0, 1, 0], [1, 2, 3, 0], [2, 2, 2, 0], [2, 0, 1, 0], [1, 2, 3, 0], [0, 2, 3, 0], [2, 2, 2, 0], [0, 2, 3, 0], [2, 0, 1, 0], [1, 2, 3, 0], [2, 2, 2, 0], [1, 1, 2, 0], [0, 2, 3, 0]]];
+
+// Country → ISO code mapping
+const ISO={
+  "México":"mx","Sudáfrica":"za","Corea del sur":"kr","Corea del Sur":"kr",
+  "República Checa":"cz","Canadá":"ca","Bosnia Herzegovina":"ba","Bosnia y Herzegovina":"ba",
+  "Estados Unidos":"us","Paraguay":"py","Catar":"qa","Suiza":"ch",
+  "Brasil":"br","Marruecos":"ma","Haití":"ht","Haiti":"ht",
+  "Escocia":"gb-sct","Australia":"au","Turquía":"tr","Alemania":"de",
+  "Curazao":"cw","Países Bajos":"nl","Japón":"jp","Costa de marfil":"ci",
+  "Costa de Marfil":"ci","Ecuador":"ec","Suecia":"se","Túnez":"tn",
+  "España":"es","Cabo Verde":"cv","Bélgica":"be","Egipto":"eg",
+  "Arabia Saudita":"sa","Uruguay":"uy","Uruguay ":"uy","Irán":"ir","Iran":"ir",
+  "Nueva Zelanda":"nz","Francia":"fr","Senegal":"sn","Irak":"iq",
+  "Noruega":"no","Argentina":"ar","Argelia":"dz","Austria":"at",
+  "Jordania":"jo","Portugal":"pt","RD Congo":"cd","Inglaterra":"gb-eng",
+  "Croacia":"hr","Ghana":"gh","Panamá":"pa","Uzbekistán":"uz","Uzbekistan":"uz",
+  "Colombia":"co"
+};
+// Embedded flag images as base64 data URIs — zero external dependencies
+const FLAGS={"mx": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB4PSIwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwNjg0NyIvPjxyZWN0IHg9IjMwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI2MDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjY2UxMTI2Ii8+PC9zdmc+", "ca": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB4PSIwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2Q4MDYyMSIvPjxyZWN0IHg9IjMwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI2MDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZDgwNjIxIi8+PC9zdmc+", "us": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI0IyMjIzNCIvPjxyZWN0IHk9IjAiIHdpZHRoPSI5MDAiIGhlaWdodD0iNDYiIGZpbGw9IiNCMjIyMzQiLz48cmVjdCB5PSI0NiIgd2lkdGg9IjkwMCIgaGVpZ2h0PSI0NiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjkyIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjQjIyMjM0Ii8+PHJlY3QgeT0iMTM4IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iMTg1IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjQjIyMjM0Ii8+PHJlY3QgeT0iMjMxIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iMjc3IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjQjIyMjM0Ii8+PHJlY3QgeT0iMzIzIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iMzY5IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjQjIyMjM0Ii8+PHJlY3QgeT0iNDE1IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iNDYyIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjQjIyMjM0Ii8+PHJlY3QgeT0iNTA4IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iNTU0IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ2IiBmaWxsPSIjQjIyMjM0Ii8+PHJlY3Qgd2lkdGg9IjM2MC4wIiBoZWlnaHQ9IjMyMyIgZmlsbD0iIzNDM0I2RSIvPjxjaXJjbGUgY3g9IjQ1LjAiIGN5PSIzMy4wIiByPSIyMS4wMDAwMDAwMDAwMDAwMDQiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIxMDguMCIgY3k9IjMzLjAiIHI9IjIxLjAwMDAwMDAwMDAwMDAwNCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE3MS4wIiBjeT0iMzMuMCIgcj0iMjEuMDAwMDAwMDAwMDAwMDA0IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjM0LjAiIGN5PSIzMy4wIiByPSIyMS4wMDAwMDAwMDAwMDAwMDQiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIyOTcuMCIgY3k9IjMzLjAiIHI9IjIxLjAwMDAwMDAwMDAwMDAwNCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjcyLjAiIGN5PSI2Ni4wIiByPSIyMS4wMDAwMDAwMDAwMDAwMDQiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIxMzUuMCIgY3k9IjY2LjAiIHI9IjIxLjAwMDAwMDAwMDAwMDAwNCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE5OC4wIiBjeT0iNjYuMCIgcj0iMjEuMDAwMDAwMDAwMDAwMDA0IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjYxLjAiIGN5PSI2Ni4wIiByPSIyMS4wMDAwMDAwMDAwMDAwMDQiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIzMjQuMCIgY3k9IjY2LjAiIHI9IjIxLjAwMDAwMDAwMDAwMDAwNCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==", "co": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2ZjZDExNiIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMwMDM4OTMiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjY2UxMTI2Ii8+PC9zdmc+", "br": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwOWMzYiIvPjxwb2x5Z29uIHBvaW50cz0iNDUwLjAsMzAuMCA4NTUuMCwzMDAuMCA0NTAuMCw1NzAuMCA0NS4wLDMwMC4wIiBmaWxsPSIjZmVkZjAwIi8+PGNpcmNsZSBjeD0iNDUwLjAiIGN5PSIzMDAuMCIgcj0iMTYyLjAiIGZpbGw9IiMwMDI3NzYiLz48cmVjdCB5PSIyNjQuMCIgeD0iMTgwLjAiIHdpZHRoPSI1NDAuMCIgaGVpZ2h0PSI3Mi4wIiBmaWxsPSIjMDA5YzNiIi8+PC9zdmc+", "ar": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzc0YWNkZiIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjNzRhY2RmIi8+PGNpcmNsZSBjeD0iNDUwLjAiIGN5PSIzMDAuMCIgcj0iOTAuMCIgZmlsbD0iI2Y2YjQwZSIvPjxjaXJjbGUgY3g9IjQ1MC4wIiBjeT0iMzAwLjAiIHI9IjU0LjAiIGZpbGw9IiM4NDM1MTEiLz48L3N2Zz4=", "uy": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjY3IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjY3IiBmaWxsPSIjMDAzOGE4Ii8+PHJlY3QgeT0iMjAwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjY3IiBmaWxsPSIjMDAzOGE4Ii8+PHJlY3QgeT0iMzMzIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjY3IiBmaWxsPSIjMDAzOGE4Ii8+PHJlY3QgeT0iNDY3IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjY3IiBmaWxsPSIjMDAzOGE4Ii8+PGNpcmNsZSBjeD0iMTk4LjAiIGN5PSIzMDAuMCIgcj0iMTIwLjAiIGZpbGw9IiNmZmQ3MDAiLz48Y2lyY2xlIGN4PSIxOTguMCIgY3k9IjMwMC4wIiByPSI3Mi4wIiBmaWxsPSIjZmNkMTE2Ii8+PC9zdmc+", "py": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Q1MmIxZSIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMDAzOGE4Ii8+PGNpcmNsZSBjeD0iNDUwLjAiIGN5PSIzMDAuMCIgcj0iMTA4LjAiIGZpbGw9IiMwMDliM2EiLz48L3N2Zz4=", "pa": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iNDUwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQ1MCIgeT0iMzAwIiB3aWR0aD0iNDUwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQ1MCIgd2lkdGg9IjQ1MCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNkMjEwMzQiLz48cmVjdCB5PSIzMDAiIHdpZHRoPSI0NTAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMDAzODkzIi8+PGNpcmNsZSBjeD0iMjI1LjAiIGN5PSIxNTAuMCIgcj0iMTA4LjAiIGZpbGw9IiMwMDM4OTMiLz48Y2lyY2xlIGN4PSI2NzUuMCIgY3k9IjQ1MC4wIiByPSIxMDguMCIgZmlsbD0iI2QyMTAzNCIvPjwvc3ZnPg==", "ec": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2ZmZDEwMCIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMwMDM4OTMiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZDgwNjIxIi8+PC9zdmc+", "ht": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzAwMjA5ZiIvPjxyZWN0IHk9IjMwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNkMjEwMzQiLz48L3N2Zz4=", "fr": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB4PSIwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMjM5NSIvPjxyZWN0IHg9IjMwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI2MDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZWQyOTM5Ii8+PC9zdmc+", "de": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwMCIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNkZDAwMDAiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZmZjZTAwIi8+PC9zdmc+", "es": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2M2MGIxZSIvPjxyZWN0IHk9IjE1MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNmZmM0MDAiLz48cmVjdCB5PSI0NTAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjYzYwYjFlIi8+PC9zdmc+", "pt": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iMzQyIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwNjYwMCIvPjxyZWN0IHg9IjM0MiIgd2lkdGg9IjU1OCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZjAwMDAiLz48Y2lyY2xlIGN4PSIzNDIuMCIgY3k9IjMwMC4wIiByPSIxMzIuMCIgZmlsbD0iI2ZmZmYwMCIvPjxjaXJjbGUgY3g9IjM0Mi4wIiBjeT0iMzAwLjAiIHI9Ijk2LjAiIGZpbGw9IiMwMDMzOTkiLz48L3N2Zz4=", "nl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2FlMWMyOCIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMjE0NjhiIi8+PC9zdmc+", "be": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB4PSIwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMCIvPjxyZWN0IHg9IjMwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZGRhMjUiLz48cmVjdCB4PSI2MDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZWYzMzQwIi8+PC9zdmc+", "se": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwNmFhNyIvPjxyZWN0IHg9IjI1MiIgd2lkdGg9IjEwOCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZWNjMDIiLz48cmVjdCB5PSIyNTIiIHdpZHRoPSI5MDAiIGhlaWdodD0iOTYiIGZpbGw9IiNmZWNjMDIiLz48L3N2Zz4=", "no": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmMmIyZCIvPjxyZWN0IHg9IjI1MiIgd2lkdGg9IjkwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjI1MiIgd2lkdGg9IjkwMCIgaGVpZ2h0PSI5NiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjI3MCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMjg2OCIvPjxyZWN0IHk9IjI3MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzAwMjg2OCIvPjwvc3ZnPg==", "ch": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2ZmMDAwMCIvPjxyZWN0IHg9IjM0MiIgeT0iMTAyIiB3aWR0aD0iMjE2IiBoZWlnaHQ9IjM5NiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjE5OCIgeT0iMjI4IiB3aWR0aD0iNTA0IiBoZWlnaHQ9IjE0NCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==", "at": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VkMjkzOSIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZWQyOTM5Ii8+PC9zdmc+", "hr": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2ZmMDAwMCIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMTcxNzk2Ii8+PHJlY3QgeD0iMzQyIiB5PSI2MCIgd2lkdGg9IjQ1IiBoZWlnaHQ9IjYwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMzg3IiB5PSI2MCIgd2lkdGg9IjQ1IiBoZWlnaHQ9IjYwIiBmaWxsPSIjZmYwMDAwIi8+PHJlY3QgeD0iMzQyIiB5PSIxMjAiIHdpZHRoPSI0NSIgaGVpZ2h0PSI2MCIgZmlsbD0iI2ZmMDAwMCIvPjxyZWN0IHg9IjM4NyIgeT0iMTIwIiB3aWR0aD0iNDUiIGhlaWdodD0iNjAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIzNDIiIHk9IjE4MCIgd2lkdGg9IjQ1IiBoZWlnaHQ9IjYwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMzg3IiB5PSIxODAiIHdpZHRoPSI0NSIgaGVpZ2h0PSI2MCIgZmlsbD0iI2ZmMDAwMCIvPjxyZWN0IHg9IjM0MiIgeT0iMjQwIiB3aWR0aD0iNDUiIGhlaWdodD0iNjAiIGZpbGw9IiNmZjAwMDAiLz48cmVjdCB4PSIzODciIHk9IjI0MCIgd2lkdGg9IjQ1IiBoZWlnaHQ9IjYwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMzQyIiB5PSIzMDAiIHdpZHRoPSI0NSIgaGVpZ2h0PSI2MCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==", "cz": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjMwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNkNzE0MWEiLz48cG9seWdvbiBwb2ludHM9IjAsMCAzNDIsMzAwIDAsNjAwIiBmaWxsPSIjMTE0NTdlIi8+PC9zdmc+", "ba": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMjM5NSIvPjxwb2x5Z29uIHBvaW50cz0iMTA4LjAsMjQuMCA3OTIuMCwyNC4wIDc5Mi4wLDU3Ni4wIiBmaWxsPSIjZmVjYjAwIi8+PGNpcmNsZSBjeD0iNzIuMCIgY3k9IjUyOC4wIiByPSIyNC4wIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTM1LjAiIGN5PSI0ODYuMCIgcj0iMjQuMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE5OC4wIiBjeT0iNDQ0LjAiIHI9IjI0LjAiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIyNjEuMCIgY3k9IjQwMi4wIiByPSIyNC4wIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMzI0LjAiIGN5PSIzNjAuMCIgcj0iMjQuMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM4Ny4wMDAwMDAwMDAwMDAwNiIgY3k9IjMxOC4wIiByPSIyNC4wIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNDUwLjAwMDAwMDAwMDAwMDA2IiBjeT0iMjc1Ljk5OTk5OTk5OTk5OTk0IiByPSIyNC4wIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTEzLjAiIGN5PSIyMzMuOTk5OTk5OTk5OTk5OTQiIHI9IjI0LjAiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI1NzYuMCIgY3k9IjE5MS45OTk5OTk5OTk5OTk5NCIgcj0iMjQuMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjYzOS4wMDAwMDAwMDAwMDAxIiBjeT0iMTQ5Ljk5OTk5OTk5OTk5OTk0IiByPSIyNC4wIiBmaWxsPSIjZmZmIi8+PC9zdmc+", "gb-eng": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjM3OCIgd2lkdGg9IjE0NCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNjZjE0MmIiLz48cmVjdCB5PSIyNTIiIHdpZHRoPSI5MDAiIGhlaWdodD0iOTYiIGZpbGw9IiNjZjE0MmIiLz48L3N2Zz4=", "gb-sct": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMzg5MyIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjkwMCIgeTI9IjYwMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEzMi4wIi8+PGxpbmUgeDE9IjkwMCIgeTE9IjAiIHgyPSIwIiB5Mj0iNjAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMTMyLjAiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI5MDAiIHkyPSI2MDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI3OC4wIi8+PGxpbmUgeDE9IjkwMCIgeTE9IjAiIHgyPSIwIiB5Mj0iNjAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNzguMCIvPjwvc3ZnPg==", "za": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwN2E0ZCIvPjxwb2x5Z29uIHBvaW50cz0iMCwwIDQ1MC4wLDEzMi4wIDAsMjY0LjAiIGZpbGw9IiMwMDAiLz48cG9seWdvbiBwb2ludHM9IjAsMzM2LjAwMDAwMDAwMDAwMDA2IDQ1MC4wLDQ2OC4wIDAsNjAwIiBmaWxsPSIjMDAwIi8+PHBvbHlnb24gcG9pbnRzPSIwLDAgNDg2LjAwMDAwMDAwMDAwMDA2LDE1Ni4wIDAsMjY0LjAiIGZpbGw9IiNmZmI2MTIiLz48cG9seWdvbiBwb2ludHM9IjAsMzM2LjAwMDAwMDAwMDAwMDA2IDQ4Ni4wMDAwMDAwMDAwMDAwNiw0NDQuMCAwLDYwMCIgZmlsbD0iI2ZmYjYxMiIvPjxyZWN0IHk9IjI2NCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSI3MiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjI2NCIgeD0iMzE1IiB3aWR0aD0iNTg1IiBoZWlnaHQ9IjcyIiBmaWxsPSIjZGUzODMxIi8+PC9zdmc+", "ma": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2MxMjcyZCIvPjxwb2x5Z29uIHBvaW50cz0iNDUwLjAsOTAuMCA0ODYuMDAwMDAwMDAwMDAwMDYsMjUyLjAgNzIwLjAsMjUyLjAgNTIyLjAsMzQ4LjAgNTk0LjAsNTEwLjAgNDUwLjAsNDIwLjAgMzA2LjAsNTEwLjAgMzc4LjAsMzQ4LjAgMTgwLjAsMjUyLjAgNDE0LjAsMjUyLjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNjIzMyIgc3Ryb2tlLXdpZHRoPSIxOC4wIi8+PC9zdmc+", "sn": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB4PSIwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwODUzZiIvPjxyZWN0IHg9IjMwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZGVmNDIiLz48cmVjdCB4PSI2MDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZTMxYjIzIi8+PC9zdmc+", "gh": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwNmIzZiIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmY2QxMTYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjY2UxMTI2Ii8+PC9zdmc+", "ci": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB4PSIwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2Y3N2YwMCIvPjxyZWN0IHg9IjMwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI2MDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjMDA5YTQ0Ii8+PC9zdmc+", "eg": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2NlMTEyNiIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMDAwIi8+PGNpcmNsZSBjeD0iNDUwLjAiIGN5PSIzMDAuMCIgcj0iMTA4LjAiIGZpbGw9IiNjMDkzMDAiLz48Y2lyY2xlIGN4PSI0NTAuMCIgY3k9IjMwMC4wIiByPSI3Mi4wIiBmaWxsPSIjYzA5MzAwIi8+PC9zdmc+", "tn": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2U3MDAxMyIvPjxjaXJjbGUgY3g9IjQ1MC4wIiBjeT0iMzAwLjAiIHI9IjIxMC4wIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNDUwLjAiIGN5PSIzMDAuMCIgcj0iMTY4LjAwMDAwMDAwMDAwMDAzIiBmaWxsPSIjZTcwMDEzIi8+PC9zdmc+", "dz": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iNDUwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwNjIzMyIvPjxyZWN0IHg9IjQ1MCIgd2lkdGg9IjQ1MCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI0NjguMCIgY3k9IjMwMC4wIiByPSIxNjIuMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjUyMi4wIiBjeT0iMzAwLjAiIHI9IjE0NC4wIiBmaWxsPSIjMDA2MjMzIi8+PC9zdmc+", "cd": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwN2ZmZiIvPjxsaW5lIHgxPSIwIiB5MT0iNjAwIiB4Mj0iOTAwIiB5Mj0iMCIgc3Ryb2tlPSIjZjdkNjE4IiBzdHJva2Utd2lkdGg9IjQ4LjAiLz48cmVjdCB5PSI0NTAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjY2UxMDIxIi8+PC9zdmc+", "cv": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMzg5MyIvPjxyZWN0IHk9IjMzMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjM1NCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxNSIgZmlsbD0iI2NmMjAyNyIvPjxyZWN0IHk9IjM3OCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxNSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE4MC4wIiBjeT0iMjUyLjAiIHI9IjI0LjAiIGZpbGw9IiNmN2QxMTYiLz48Y2lyY2xlIGN4PSIyNzAuMCIgY3k9IjI1Mi4wIiByPSIyNC4wIiBmaWxsPSIjZjdkMTE2Ii8+PGNpcmNsZSBjeD0iMzYwLjAiIGN5PSIyNTIuMCIgcj0iMjQuMCIgZmlsbD0iI2Y3ZDExNiIvPjxjaXJjbGUgY3g9IjQ1MC4wIiBjeT0iMjUyLjAiIHI9IjI0LjAiIGZpbGw9IiNmN2QxMTYiLz48Y2lyY2xlIGN4PSI1NDAuMCIgY3k9IjI1Mi4wIiByPSIyNC4wIiBmaWxsPSIjZjdkMTE2Ii8+PGNpcmNsZSBjeD0iMjYxLjAiIGN5PSIyMjguMCIgcj0iMjQuMCIgZmlsbD0iI2Y3ZDExNiIvPjxjaXJjbGUgY3g9IjMxNS4wIiBjeT0iMjI4LjAiIHI9IjI0LjAiIGZpbGw9IiNmN2QxMTYiLz48Y2lyY2xlIGN4PSIzNjkuMCIgY3k9IjIyOC4wIiByPSIyNC4wIiBmaWxsPSIjZjdkMTE2Ii8+PC9zdmc+", "sa": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwNmMzNSIvPjxyZWN0IHk9IjQ4MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSI2MCIgZmlsbD0iI2ZmZiIvPjx0ZXh0IHg9IjQ1MC4wIiB5PSIzNDguMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNjguMDAwMDAwMDAwMDAwMDMiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJzZXJpZiI+JiN4MjAyMjsmI3gyMDIyOyYjeDIwMjI7PC90ZXh0Pjwvc3ZnPg==", "qa": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cG9seWdvbiBwb2ludHM9IjAsMCAzMTUuMCwzMDAuMCAwLDYwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjMxNSIgd2lkdGg9IjU4NSIgaGVpZ2h0PSI2MDAiIGZpbGw9IiM4ZDFiM2QiLz48cmVjdCB4PSIzMTUiIHdpZHRoPSI1ODUiIGhlaWdodD0iNjAwIiBmaWxsPSIjOGQxYjNkIi8+PC9zdmc+", "iq": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2NlMTEyNiIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNDUwLjAiIHk9IjQwMi4wIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4MC4wIiBmaWxsPSIjMDA3YTNkIiBmb250LWZhbWlseT0ic2VyaWYiPiYjeDI2MDU7JiN4MjYwNTsmI3gyNjA1OzwvdGV4dD48L3N2Zz4=", "ir": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzIzOWY0MCIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZGEwMDAwIi8+PHJlY3QgeT0iMTc0IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjM5ZjQwIi8+PHJlY3QgeT0iMzc4IiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZGEwMDAwIi8+PC9zdmc+", "jo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzAwN2EzZCIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMDAwIi8+PHBvbHlnb24gcG9pbnRzPSIwLDAgMjcwLjAsMzAwLjAgMCw2MDAiIGZpbGw9IiNjZTExMjYiLz48Y2lyY2xlIGN4PSIxMDguMCIgY3k9IjMwMC4wIiByPSI1NC4wIiBmaWxsPSIjZmZmIi8+PC9zdmc+", "tr": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2UzMGExNyIvPjxjaXJjbGUgY3g9IjM3OC4wIiBjeT0iMzAwLjAiIHI9IjE2OC4wMDAwMDAwMDAwMDAwMyIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjQyMy4wIiBjeT0iMzAwLjAiIHI9IjEzMi4wIiBmaWxsPSIjZTMwYTE3Ii8+PHBvbHlnb24gcG9pbnRzPSI1NTguMCwxMzIuMCA1ODUuMCwxOTIuMCA2ODQuMCwxODAuMCA2MjEuMCwyMjguMCA2NTcuMCwyODguMCA1NTguMCwyNTIuMCA0NTkuMCwzMDAuMCA0ODYuMDAwMDAwMDAwMDAwMDYsMjQwLjAgMzk2LjAsMjA0LjAwMDAwMDAwMDAwMDAzIDUwNC4wMDAwMDAwMDAwMDAwNiwxOTIuMCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==", "jp": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjQ1MC4wIiBjeT0iMzAwLjAiIHI9IjE4MC4wIiBmaWxsPSIjYmMwMDJkIi8+PC9zdmc+", "kr": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjQ1MC4wIiBjeT0iMzAwLjAiIHI9IjE4MC4wIiBmaWxsPSIjY2QyZTNhIi8+PGNsaXBQYXRoIGlkPSJjIj48Y2lyY2xlIGN4PSI0NTAuMCIgY3k9IjMwMC4wIiByPSIxODAuMCIvPjwvY2xpcFBhdGg+PGNpcmNsZSBjeD0iMzE1IiBjeT0iMjEwIiByPSI5MC4wIiBmaWxsPSIjY2QyZTNhIiBjbGlwLXBhdGg9InVybCgjYykiLz48Y2lyY2xlIGN4PSI1ODUiIGN5PSIzOTAiIHI9IjkwLjAiIGZpbGw9IiMwMDM0NzgiIGNsaXAtcGF0aD0idXJsKCNjKSIvPjwvc3ZnPg==", "au": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMDA4YiIvPjxyZWN0IHdpZHRoPSI0NTAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMDAwMDhiIi8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iNDUwLjAiIHkyPSIzMDAuMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjQ4LjAiLz48bGluZSB4MT0iNDUwLjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjMwMC4wIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNDguMCIvPjxyZWN0IHg9IjE4MCIgd2lkdGg9IjkwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjEyMCIgd2lkdGg9IjQ1MCIgaGVpZ2h0PSI2MCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjE5OCIgd2lkdGg9IjU0IiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2NjMDAwMSIvPjxyZWN0IHk9IjEzMiIgd2lkdGg9IjQ1MCIgaGVpZ2h0PSIzNiIgZmlsbD0iI2NjMDAwMSIvPjxjaXJjbGUgY3g9IjY3NS4wIiBjeT0iMTUwLjAiIHI9IjI0LjAiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI2NzUuMCIgY3k9IjQ1MC4wIiByPSI0Mi4wMDAwMDAwMDAwMDAwMSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9Ijc5Mi4wIiBjeT0iMzAwLjAiIHI9IjMwLjAiIGZpbGw9IiNmZmYiLz48L3N2Zz4=", "nz": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMjQ3ZCIvPjxyZWN0IHdpZHRoPSI0MDUiIGhlaWdodD0iMzAwIiBmaWxsPSIjMDAyNDdkIi8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iNDA1LjAiIHkyPSIzMDAuMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjQ4LjAiLz48bGluZSB4MT0iNDA1LjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjMwMC4wIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNDguMCIvPjxyZWN0IHg9IjE2MiIgd2lkdGg9IjgxIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjEyNiIgd2lkdGg9IjQwNSIgaGVpZ2h0PSI0OCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjE4MCIgd2lkdGg9IjQ1IiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2NjMDAwMSIvPjxyZWN0IHk9IjEzOCIgd2lkdGg9IjQwNSIgaGVpZ2h0PSIyNCIgZmlsbD0iI2NjMDAwMSIvPjxjaXJjbGUgY3g9IjYzMC4wIiBjeT0iMTA4LjAiIHI9IjM2LjAiIGZpbGw9IiNjYzAwMDEiLz48Y2lyY2xlIGN4PSI3ODMuMCIgY3k9IjE4MC4wIiByPSIzNi4wIiBmaWxsPSIjY2MwMDAxIi8+PGNpcmNsZSBjeD0iNjkzLjAiIGN5PSIyNzYuMCIgcj0iMzYuMCIgZmlsbD0iI2NjMDAwMSIvPjxjaXJjbGUgY3g9Ijg0Ni4wIiBjeT0iMTA4LjAiIHI9IjM2LjAiIGZpbGw9IiNjYzAwMDEiLz48L3N2Zz4=", "cn": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2RlMjkxMCIvPjxjaXJjbGUgY3g9IjE4MC4wIiBjeT0iMTY4LjAwMDAwMDAwMDAwMDAzIiByPSIxMjAuMCIgZmlsbD0iI2ZmZGUwMCIvPjxjaXJjbGUgY3g9IjM0Mi4wIiBjeT0iNjAuMCIgcj0iNDIuMDAwMDAwMDAwMDAwMDEiIGZpbGw9IiNmZmRlMDAiLz48Y2lyY2xlIGN4PSIzMzMuOSIgY3k9IjEyMC4wIiByPSI0Mi4wMDAwMDAwMDAwMDAwMSIgZmlsbD0iI2ZmZGUwMCIvPjxjaXJjbGUgY3g9IjMyNi4yMDUiIGN5PSIxODAuMCIgcj0iNDIuMDAwMDAwMDAwMDAwMDEiIGZpbGw9IiNmZmRlMDAiLz48Y2lyY2xlIGN4PSIzMTguODk0NzUiIGN5PSIyNDAuMCIgcj0iNDIuMDAwMDAwMDAwMDAwMDEiIGZpbGw9IiNmZmRlMDAiLz48L3N2Zz4=", "cw": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAwMmI3ZiIvPjxyZWN0IHk9IjQwMiIgd2lkdGg9IjkwMCIgaGVpZ2h0PSI3MiIgZmlsbD0iI2Y5ZTgxNCIvPjxjaXJjbGUgY3g9IjI1Mi4wMDAwMDAwMDAwMDAwMyIgY3k9IjIyOC4wIiByPSI2MC4wIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTk4LjAiIGN5PSIxNjguMDAwMDAwMDAwMDAwMDMiIHI9IjQyLjAwMDAwMDAwMDAwMDAxIiBmaWxsPSIjZmZmIi8+PC9zdmc+", "uz": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB5PSIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzFlYjUzYSIvPjxyZWN0IHk9IjIwMCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSI0MDAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjY2UxMTI2Ii8+PC9zdmc+", "jp_": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjQ1MC4wIiBjeT0iMzAwLjAiIHI9IjE4MC4wIiBmaWxsPSIjYmMwMDJkIi8+PC9zdmc+", "gb": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj48cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAxMjE2OSIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjkwMCIgeTI9IjYwMCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEyMC4wIi8+PGxpbmUgeDE9IjkwMCIgeTE9IjAiIHgyPSIwIiB5Mj0iNjAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMTIwLjAiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI5MDAiIHkyPSI2MDAiIHN0cm9rZT0iI2M4MTAyZSIgc3Ryb2tlLXdpZHRoPSI3Mi4wIi8+PGxpbmUgeDE9IjkwMCIgeTE9IjAiIHgyPSIwIiB5Mj0iNjAwIiBzdHJva2U9IiNjODEwMmUiIHN0cm9rZS13aWR0aD0iNzIuMCIvPjxyZWN0IHg9IjM3OCIgd2lkdGg9IjE0NCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNmZmYiLz48cmVjdCB5PSIyNTIiIHdpZHRoPSI5MDAiIGhlaWdodD0iOTYiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI0MDUiIHdpZHRoPSI5MCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNjODEwMmUiLz48cmVjdCB5PSIyNzAiIHdpZHRoPSI5MDAiIGhlaWdodD0iNjAiIGZpbGw9IiNjODEwMmUiLz48L3N2Zz4="};
+// Renders a flag <img> from embedded data
+function fi(country, sizeClass){
+  const code = ISO[country?.trim()];
+  const src = code && FLAGS[code];
+  if(!src) return '<span style="font-size:1rem;opacity:.4">🏳</span>';
+  return `<img src="${src}" class="flag-img ${sizeClass}" title="${country}" alt="${country}">`;
+}
+function fiWrap(country, sizeClass, extraStyle=''){
+  const code = ISO[country?.trim()];
+  const src = code && FLAGS[code];
+  if(!src) return '<span style="font-size:1rem;opacity:.4">🏳</span>';
+  return `<img src="${src}" class="flag-img ${sizeClass}" title="${country}" alt="${country}" style="${extraStyle}">`;
+}
+
+function wcLabel(wc,ta,tb){ return wc===1?"Gana "+ta:wc===2?"Empate":wc===3?"Gana "+tb:"Sin pronóstico"; }
+function ptsClass(p){ return p>=3?"pts-3":p>=1?"pts-1":"pts-0"; }
+function ptsLabel(p){ return p>=3?`🎯 ${p} pts — ¡Exacto!`:p>=1?`✅ ${p} pt — Correcto`:`❌ 0 pts`; }
+
+// Build flags strip
+(function(){
+  const strip=document.getElementById("flagsStrip");
+  const seen=new Set();
+  Object.entries(ISO).forEach(([name,code])=>{
+    if(seen.has(code)) return; seen.add(code);
+    const chip=document.createElement("span");
+    chip.className="flag-chip"; chip.title=name;
+    const src=FLAGS[code];
+    chip.innerHTML=src?`<img src="${src}" class="flag-img fi-lg" alt="${name}" style="display:block">`:'🏳';
+    strip.appendChild(chip);
+  });
+})();
+
+function showTab(id,btn){
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+id).classList.add("active");
+  btn.classList.add("active");
+}
+
+function initLeaderboard(){
+  const mx=P[0][1]||1;
+  document.getElementById("podium").innerHTML=`<div class="podium">${[1,0,2].map(i=>{
+    const p=P[i]; if(!p) return "";
+    const cls=["podium-2","podium-1","podium-3"][i];
+    const med=["🥇","🥈","🥉"][i];
+    return `<div class="podium-item"><div class="podium-block ${cls}">
+      <div class="podium-medal">${med}</div>
+      <div class="podium-name">${p[0]}</div>
+      <div class="podium-pts">${p[1]}</div>
+      <div class="podium-pos">${fi(p[2],"fi-xs")} ${p[2]}</div>
+    </div></div>`;
+  }).join("")}</div>`;
+
+  document.getElementById("lbTable").innerHTML=`<thead><tr>
+    <th>#</th><th>Nombre</th><th>Puntos</th><th>🏆 Campeón</th>
+  </tr></thead><tbody>${P.map((p,i)=>{
+    const rc=i<3?"rank-"+(i+1):"rank-n";
+    return `<tr>
+      <td><span class="rank-badge ${rc}">${i+1}</span></td>
+      <td><strong>${p[0]}</strong></td>
+      <td><div class="pts-bar-wrap"><div class="pts-bar" style="width:${Math.round(p[1]/mx*130)}px"></div><span class="pts-num">${p[1]}</span></div></td>
+      <td><span class="champ-chip">${fi(p[2],"fi-xs")} ${p[2]}</span></td>
+    </tr>`;
+  }).join("")}</tbody>`;
+
+  const cc={};
+  P.forEach(p=>{ cc[p[2]]=(cc[p[2]]||0)+1; });
+  const sorted=Object.entries(cc).sort((a,b)=>b[1]-a[1]);
+  const colors=["#C1121F","#0284c7","#7c3aed","#d97706","#059669","#db2777","#0891b2","#65a30d","#9333ea","#ea580c"];
+  new Chart(document.getElementById("champChart"),{
+    type:"doughnut",
+    data:{labels:sorted.map(([k])=>k),datasets:[{data:sorted.map(([,v])=>v),backgroundColor:colors.map(c=>c+"28"),borderColor:colors,borderWidth:2.5,hoverBorderWidth:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{
+      legend:{position:"right",labels:{color:"#0f172a",font:{size:12,family:"Be Vietnam Pro",weight:"600"},padding:12,boxWidth:14}},
+      tooltip:{callbacks:{label:c=>` ${c.raw} votos`}}
+    }}
+  });
+
+  const pl=M.filter(m=>m.p).length;
+  document.getElementById("statsGrid").innerHTML=[
+    {ic:"👥",v:20,l:"Participantes"},{ic:"⚽",v:pl+"/72",l:"Jugados"},
+    {ic:"💰",v:"$400K",l:"Pozo COP"},{ic:"🏆",v:P[0][1],l:"Líder (pts)"},
+    {ic:"📊",v:P.reduce((a,p)=>a+p[1],0),l:"Pts totales"},
+    {ic:"⏰",v:P.filter(p=>p[1]===0).length,l:"Sin puntos"},
+  ].map(s=>`<div class="stat-card"><span class="stat-icon">${s.ic}</span><div class="stat-val">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join("");
+}
+
+function initMatches(){
+  const pl=document.getElementById("playedMatches");
+  const pe=document.getElementById("pendingMatches");
+  M.forEach((m,mi)=>{
+    let ca=0,cd=0,cb=0;
+    PREDS.forEach(pp=>{ const w=pp[mi][2]; if(w===1)ca++; else if(w===2)cd++; else if(w===3)cb++; });
+    const tot=ca+cd+cb||1;
+    const card=document.createElement("div");
+    card.className="match-card "+(m.p?"played":"pending");
+    card.onclick=()=>openMatchDetail(mi);
+    const scoreH=m.p?`<div class="score-display"><div class="score-nums">${m.ga}<span style="color:#cbd5e1;margin:0 6px">—</span>${m.gb}</div></div>`:`<div class="score-display"><div class="score-vs">VS</div></div>`;
+    card.innerHTML=`
+      <div class="match-status">${m.p?"✅ Jugado":"⏳ Pendiente"}</div>
+      <div class="match-teams">
+        <div class="team-side"><div class="team-flag-wrap">${fi(m.ta,"fi-lg")}</div><div class="team-name">${m.ta}</div></div>
+        ${scoreH}
+        <div class="team-side"><div class="team-flag-wrap">${fi(m.tb,"fi-lg")}</div><div class="team-name">${m.tb}</div></div>
+      </div>
+      <div class="match-votes">
+        <div class="vote-bar-row"><span class="vote-label">${fi(m.ta,"fi-xs")} Gana</span><div class="vote-bar-track"><div class="vote-bar-fill vb-a" style="width:${ca/tot*100}%"></div></div><span class="vote-count">${ca}</span></div>
+        <div class="vote-bar-row"><span class="vote-label">🤝 Empate</span><div class="vote-bar-track"><div class="vote-bar-fill vb-d" style="width:${cd/tot*100}%"></div></div><span class="vote-count">${cd}</span></div>
+        <div class="vote-bar-row"><span class="vote-label">${fi(m.tb,"fi-xs")} Gana</span><div class="vote-bar-track"><div class="vote-bar-fill vb-b" style="width:${cb/tot*100}%"></div></div><span class="vote-count">${cb}</span></div>
+      </div>`;
+    (m.p?pl:pe).appendChild(card);
+  });
+}
+
+function openMatchDetail(mi){
+  const m=M[mi];
+  const rows=P.map((p,pi)=>{
+    const pr=PREDS[pi][mi];
+    if(pr[0]===null&&pr[1]===null&&pr[2]===0) return null;
+    return {name:p[0],pa:pr[0],pb:pr[1],wc:pr[2],pts:pr[3]};
+  }).filter(Boolean).sort((a,b)=>b.pts-a.pts);
+  document.getElementById("overlayContent").innerHTML=`
+    <h3 style="margin-bottom:16px;font-size:1.1rem;font-weight:900;display:flex;align-items:center;gap:10px">
+      ${fi(m.ta,"fi-lg")} ${m.ta} vs ${m.tb} ${fi(m.tb,"fi-lg")}
+    </h3>
+    ${m.p?`<div class="official-result"><div class="official-label">✅ Resultado oficial</div>
+      <div class="official-score">${fi(m.ta,"fi-sm")} ${m.ga} — ${m.gb} ${fi(m.tb,"fi-sm")}</div></div>`:""}
+    <div style="font-size:.72rem;color:#64748b;margin-bottom:14px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Pronósticos — ${rows.length} participantes</div>
+    ${rows.map(r=>`<div class="played-item">
+      <div class="played-item-info">
+        <div class="played-match-name">${r.name}</div>
+        <div class="played-pred">${r.pa!==null?r.pa+"-"+r.pb:"N/A"} · ${wcLabel(r.wc,m.ta,m.tb)}</div>
+      </div>
+      ${m.p?`<div class="played-pts ${ptsClass(r.pts)}">${r.pts}</div>`:""}
+    </div>`).join("")}`;
+  document.getElementById("overlay").classList.add("open");
+}
+function closeOverlay(e){ if(e.target.id==="overlay") document.getElementById("overlay").classList.remove("open"); }
+
+function initIndividual(){
+  const sel=document.getElementById("psel");
+  P.forEach((p,i)=>{
+    const o=document.createElement("option"); o.value=i;
+    o.textContent=`${i===0?"🥇 ":i===1?"🥈 ":i===2?"🥉 ":"  #"+(i+1)+" "}${p[0]} (${p[1]} pts)`;
+    sel.appendChild(o);
+  });
+  renderIndividual();
+}
+
+function renderIndividual(){
+  const pi=parseInt(document.getElementById("psel").value);
+  const p=P[pi]; const pr=PREDS[pi];
+  const cpos=["🥇 Campeón","🥈 Sub-campeón","🥉 3er Puesto","🏅 4° Puesto"];
+  const cH=`<div style="margin-bottom:22px">
+    <div class="section-title"><span class="sicon">🏆</span>Pronóstico de Campeones</div>
+    <div class="champs-grid">${[p[2],p[3],p[4],p[5]].map((t,i)=>`<div class="champ-card">
+      <div class="champ-pos">${cpos[i]}</div>
+      <div class="champ-flag-wrap">${fi(t,"fi-xl")}</div>
+      <div class="champ-team">${t}</div>
+    </div>`).join("")}</div></div>`;
+  const mH=`<div style="margin-bottom:22px">
+    <div class="section-title"><span class="sicon">🔎</span>¿Qué aposté en este partido?</div>
+    <div class="p-select-wrap"><select id="mpsel" onchange="renderMpred(${pi})">${M.map((m,mi)=>`<option value="${mi}">${m.p?"✅":"⏳"} ${m.ta} vs ${m.tb}</option>`).join("")}</select></div>
+    <div id="mpredResult"></div>
+  </div>`;
+  const pld=M.map((m,mi)=>m.p?{mi,m,pr2:pr[mi]}:null).filter(Boolean);
+  const plH=pld.length?`<div>
+    <div class="section-title"><span class="sicon">📋</span>Partidos Jugados — Pronóstico vs Resultado</div>
+    <div class="played-list">${pld.map(({mi,m,pr2})=>{
+      const ps=(pr2[0]!==null&&pr2[1]!==null)?`${pr2[0]}–${pr2[1]}`:"Sin pronóstico";
+      return `<div class="played-item">
+        <div style="flex-shrink:0">${fi(m.ta,"fi-sm")}</div>
+        <div class="played-item-info">
+          <div class="played-match-name">${m.ta} vs ${m.tb}</div>
+          <div class="played-pred">Tu apuesta: <strong>${ps}</strong> · ${wcLabel(pr2[2],m.ta,m.tb)}</div>
+          <div class="played-pred" style="color:#059669;font-weight:700">Resultado real: ${m.ga}–${m.gb}</div>
+        </div>
+        <div class="played-pts ${ptsClass(pr2[3])}">${pr2[3]}</div>
+      </div>`;
+    }).join("")}</div></div>`:"";
+  document.getElementById("indContent").innerHTML=cH+mH+plH;
+  renderMpred(pi);
+}
+
+function renderMpred(pi){
+  const sel=document.getElementById("mpsel"); if(!sel) return;
+  const mi=parseInt(sel.value); const m=M[mi];
+  const pr=PREDS[pi][mi];
+  const pa=pr[0],pb=pr[1],wc=pr[2],pts=pr[3];
+  const has=pa!==null||pb!==null||wc>0;
+  let h=`<div class="mpred-card">
+    <div class="mpred-teams">
+      <div class="mpred-team"><div class="mpred-flag-wrap">${fi(m.ta,"fi-xxl")}</div><div class="mpred-tname">${m.ta}</div></div>
+      <div style="font-size:1.1rem;font-weight:900;color:#94a3b8">VS</div>
+      <div class="mpred-team"><div class="mpred-flag-wrap">${fi(m.tb,"fi-xxl")}</div><div class="mpred-tname">${m.tb}</div></div>
+    </div>`;
+  if(!has){
+    h+=`<div style="text-align:center;color:#94a3b8;padding:18px;font-weight:600">Sin pronóstico registrado</div>`;
+  } else {
+    h+=`<div class="mpred-scores">
+      <div class="mpred-score-box"><div class="score-tag">${m.ta}</div><div class="score-big">${pa!==null?pa:"?"}</div></div>
+      <div style="align-self:center;font-size:1.5rem;font-weight:900;color:#cbd5e1">—</div>
+      <div class="mpred-score-box"><div class="score-tag">${m.tb}</div><div class="score-big">${pb!==null?pb:"?"}</div></div>
+    </div>
+    <div class="mpred-winner"><div class="winner-label">Ganador que apostaste</div><div class="winner-val">${wcLabel(wc,m.ta,m.tb)}</div></div>`;
+    if(m.p){
+      h+=`<div class="official-result">
+        <div class="official-label">✅ Resultado oficial</div>
+        <div class="official-score">${fi(m.ta,"fi-sm")} ${m.ga} — ${m.gb} ${fi(m.tb,"fi-sm")}</div>
+      </div>
+      <div class="pts-earned-row">
+        <div class="${ptsClass(pts)} pts-earned">${pts}</div>
+        <div class="pts-label-text">${ptsLabel(pts)}</div>
+      </div>`;
+    } else {
+      h+=`<div style="text-align:center;padding:12px;color:#d97706;font-size:.88rem;font-weight:700">⏳ Partido aún no jugado</div>`;
+    }
+  }
+  h+=`</div>`;
+  document.getElementById("mpredResult").innerHTML=h;
+}
+
+initLeaderboard(); initMatches(); initIndividual();
+</script>
+</body>
+</html>
