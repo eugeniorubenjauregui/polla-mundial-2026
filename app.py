@@ -622,7 +622,7 @@ def tab_leaderboard(df, matches):
                   for i,(p) in enumerate(pts_vals)]
         fig = go.Figure(go.Bar(x=top["short"], y=top["acumulado"],
                                marker_color=colors, marker_line_color="rgba(255,255,255,.1)",
-                               marker_line_width=1, borderradius=5,
+                               marker_line_width=1,
                                text=top["acumulado"].astype(int), textposition="outside",
                                textfont={"color":"white","size":11}))
         fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
